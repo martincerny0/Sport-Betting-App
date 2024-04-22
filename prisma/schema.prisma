@@ -62,16 +62,18 @@ model User {
     balance      Float    @default(0)
 }
 
-model Match {
+model Game {
   id            String    @id @default(cuid())
-  team1Name     String
-  team1Score    Int
+  sport         String
+  team1Name     String    
+  team1Score    Int     @default(0)
   team2Name     String
-  team2Score    Int
-  currentIngameTime String?
-  status        String    // e.g., "Scheduled", "Ongoing", "Completed"
-  startDateTime DateTime
+  team2Score    Int     @default(0)
+  currentIngameTime Int?    @default(0)
+  status        String    @default("Scheduled")// e.g., "Scheduled", "Ongoing", "Completed"
+  startTime DateTime
   winner        String?   // e.g., "Team1", "Team2", "Draw"
+  odds          Float     @default(1.0)
   bets          Bet[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
@@ -81,13 +83,14 @@ model Bet {
   id            String    @id @default(cuid())
   userId        String
   user          User      @relation(fields: [userId], references: [id])
-  matchId       String
-  match         Match     @relation(fields: [matchId], references: [id])
-  winner        String?   // "Team1", "Team2", or "Draw"
+  gameId        String
+  // gameWinner    String?   @map("winner")
+  game          Game      @relation(fields: [gameId], references: [id])
+  result        String?   // "Won", "Lost", "Pending"
   amount        Float     // Amount of money bet
-  odds          Float     // Odds should be captured at the time of the bet
+  potentialWin  Float     // Amount of money that can be won
+  odds          Float     // Odds of the bet
   createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
 }
 
 

@@ -23,7 +23,9 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: DefaultSession["user"] & {
       id: string;
-      surname: string;
+      name: string;
+      email: string;
+      balance: number;
       // ...other properties
       // role: UserRole;
     };
@@ -42,17 +44,21 @@ declare module "next-auth" {
  */
 
 const AUTH_PAGES = {
-  signIn: "/test.tsx",
-  signOut: "/kar.tsx",
-  index: "/test.tsx"
+  signIn: "/signin.tsx",
+  signOut: "/signup.tsx",
+  index: "/"
 }
 export const authOptions: NextAuthOptions = {
   callbacks: {
-    session: ({session}) => {
-      return {
-      ...session,
-    }},
-    async jwt({ token }) {
+     session: async ({session, token, user}) => {
+      if (session?.user) {
+        // Access the user ID from the token (assuming it's stored there)
+        session.user.id = token.sub?? ""; // Adjust property name based on your adapter
+      }
+      return session;
+    },
+  
+    async jwt({ token, user }) {
       return token;
     },
   },
@@ -78,9 +84,8 @@ export const authOptions: NextAuthOptions = {
           }
         })
         
-        const isVerified = await bcrypt.compare(credentials?.password ?? "", user?.password as string);
+        const isVerified = await bcrypt.compare(credentials?.password ?? "", user?.password ?? "");
         if(isVerified){
-          console.log("Logged in!");
           console.log(user);
           return user;
         }

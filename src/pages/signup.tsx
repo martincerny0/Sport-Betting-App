@@ -1,4 +1,5 @@
 import { NextPage } from "next";
+import Link from "next/link";
 import { useState } from "react";
 import { api } from "~/utils/api";
 
@@ -38,7 +39,7 @@ const SignUp : NextPage = () => {
                 <button className="rounded border border-orange-300" onClick={async () => { await createUser() }}>Sign Up</button>
 
                 <br></br>
-                <a href="/signin">Sign In</a>
+                <Link href="/signin">Sign In</Link>
             </div>
         </>
     )

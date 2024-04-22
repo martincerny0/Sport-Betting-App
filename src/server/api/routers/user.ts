@@ -9,15 +9,14 @@ export const userRouter = createTRPCRouter({
 
         const hashed = await bcrypt.hash(input.password, await bcrypt.genSalt(10));
 
-        // const response = await ctx.db.user.create({
-        //     data: {
-        //         email: input.email,
-        //         password: hashed,
-        //         name: input.name,
-        //     }
-        // });
+        const response = await ctx.db.user.create({
+            data: {
+                email: input.email,
+                password: hashed,
+                name: input.name,
+            }
+        });
 
-        // return response;
-        return console.log(input);
+        return response;
     }
 )});

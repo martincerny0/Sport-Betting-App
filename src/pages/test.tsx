@@ -5,15 +5,15 @@ import { api } from "~/utils/api";
 import { signIn, useSession} from "next-auth/react";
 import { signOut } from "next-auth/react";
 import Nav from "~/common/modules/components/Nav/Nav";
+import { getToken } from "next-auth/jwt";
 
 const Test: NextPage = () => {
     const { data } = useSession();
 
 
-
+    const [name, setName] = useState("lakatos");
     const [email, setEmail] = useState("mamka@kar.cz");
     const [password, setPassword] = useState("j");
-    const [name, setName] = useState("lakatos");
 
     const [kar, setKar] = useState("");
 
@@ -26,10 +26,6 @@ const Test: NextPage = () => {
             password: password,
             name: name,
           });
-        //   if(error){
-        //     return alert("neco je pici");
-        //   }
-          setKar(response.email);
     }
 
     const SignIn = async () => {
@@ -44,9 +40,6 @@ const Test: NextPage = () => {
         return alert('Failed to log in');
       }
 
-      const signOutA = async () => {
-        const data = await signOut();
-      }
       
 
     return (
@@ -67,7 +60,8 @@ const Test: NextPage = () => {
             </div>
             Vitejte {data?.user.name}
 
-            <button onClick={async () => { await signOutA() }}>Log out</button>
+            <button onClick={async () => { await signOut({ callbackUrl: 'http://localhost:3000/signoutpagesos' }) }}>Log out</button>
+            
           </div>
           </>
         )
