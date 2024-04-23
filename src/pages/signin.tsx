@@ -28,11 +28,14 @@ const SignIn : NextPage = () => {
             <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] h-64 rounded-xl">
                 <div className="flex h-min min-h-min justify-center items-center flex-row p-2 bg-gradient-to-b from-[#0D263D] to-[#141414] h-64 rounded-xl">
                 <div className="flex h-min min-h-min justify-center items-start flex-col bg-green-500">
-                        <p>betton</p>
-                        <div className="flex h-min min-h-min justify-center items-center flex-col p-2 bg-gradient-to-b from-[#FFD355] via-[#FF8D55] via-[#D33469] to-[#40348A] h-64 rounded-xl">
+                        <h1>betton</h1>
+                        <div className="flex h-min min-h-min justify-center items-center flex-col p-2 bg-gradient-to-b from-[#FFD355] via-[#FF8D55] via-[#D33469] to-[#40348A] h-64 rounded-xl opacity-90">
                         <p>Feel the thrill,</p>
                         <p>place the bet,</p> 
                         <p>take the victory lap!</p>
+                        <div className="flex h-min min-h-min justify-center items-center flex-col p-2 bg-white rounded">
+                    
+                    </div>
                     </div>
                     </div>
                     <div className="flex h-min min-h-min justify-center items-center flex-col p-2 bg-white rounded">
