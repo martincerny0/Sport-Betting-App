@@ -6,9 +6,13 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ["var(--font-sans)", ...fontFamily.sans],
-      },
-    },
+        sansation: ['Sansation Regular', 'sans-serif'],
+        sansationLight: ['Sansation Light', 'sans-serif'],
+        sansationItalic: ['Sansation Italic', 'sans-serif'],
+        sansationBold: ['Sansation Bold', 'sans-serif'],
+        sansationBoldItalic: ['Sansation Bold Italic', 'sans-serif']
+      }
+    }
   },
   plugins: [],
 } satisfies Config;

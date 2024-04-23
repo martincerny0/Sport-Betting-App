@@ -18,7 +18,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <main className={`font-sans ${inter.variable}`}>
+      <main className={`font-sansation`}>
         <Component {...pageProps} />
       </main>
     </SessionProvider>

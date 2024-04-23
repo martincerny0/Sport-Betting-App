@@ -13,7 +13,7 @@
     font-family: 'Sansation Regular';
     font-style: normal;
     font-weight: normal;
-    src: local('Sansation Regular'), url('Sansation-Regular.woff') format('woff');
+    src: local('Sansation Regular'), url('../../public/fonts/Sansation-Regular.woff') format('woff');
     }
     
 
@@ -21,7 +21,7 @@
     font-family: 'Sansation';
     font-style: normal;
     font-weight: normal;
-    src: local('Sansation'), url('Sansation_Regular.woff') format('woff');
+    src: local('Sansation'), url('../../public/fonts/Sansation_Regular.woff') format('woff');
     }
     
 
@@ -29,7 +29,7 @@
     font-family: 'Sansation Italic';
     font-style: normal;
     font-weight: normal;
-    src: local('Sansation Italic'), url('Sansation-Italic.woff') format('woff');
+    src: local('Sansation Italic'), url('../../public/fonts/Sansation-Italic.woff') format('woff');
     }
     
 
@@ -37,7 +37,7 @@
     font-family: 'Sansation Light';
     font-style: normal;
     font-weight: normal;
-    src: local('Sansation Light'), url('Sansation_Light.woff') format('woff');
+    src: local('Sansation Light'), url('../../public/fonts/Sansation_Light.woff') format('woff');
     }
     
 
@@ -45,7 +45,7 @@
     font-family: 'Sansation Bold Italic';
     font-style: normal;
     font-weight: normal;
-    src: local('Sansation Bold Italic'), url('Sansation-BoldItalic.woff') format('woff');
+    src: local('Sansation Bold Italic'), url('../../public/fonts/Sansation-BoldItalic.woff') format('woff');
     }
     
 
@@ -53,7 +53,7 @@
     font-family: 'Sansation Bold';
     font-style: normal;
     font-weight: normal;
-    src: local('Sansation Bold'), url('Sansation-Bold.woff') format('woff');
+    src: local('Sansation Bold'), url('../../public/fonts/Sansation-Bold.woff') format('woff');
     }
     
 
@@ -61,5 +61,5 @@
     font-family: 'Sansation Bold';
     font-style: normal;
     font-weight: normal;
-    src: local('Sansation Bold'), url('Sansation_Bold.woff') format('woff');
+    src: local('Sansation Bold'), url('../../public/fonts/Sansation_Bold.woff') format('woff');
     }
