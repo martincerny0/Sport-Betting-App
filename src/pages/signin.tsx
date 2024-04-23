@@ -24,17 +24,22 @@ const SignIn : NextPage = () => {
 
     return (
         <>
-        <div className="flex h-full min-h-full justify-center items-center flex-col">
-            <h2>Sign In</h2>
-            Email
-            <input type="text" placeholder="email"  className="rounded border border-orange-300" onBlur={(e) => { setEmail(e.target.value) }}/>
-            Password
-            <input type="text" placeholder="password"  className="rounded border border-orange-300" onBlur={(e) => { setPassword(e.target.value) }}/>
-            <br></br>
-            <button className="rounded border border-orange-300" onClick={async () => { await authorizeUser() }}>Sign In</button>
-
-            <br></br>
-            <Link href="/signup">Sign Up</Link>
+        <div className="flex h-full min-h-full justify-center items-center flex-col bg-gradient-to-b from-[#0D263D] to-[#141414] h-64">
+            <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] h-64 rounded-xl">
+                <div className="flex h-min min-h-min justify-center items-center flex-row p-2 bg-gradient-to-b from-[#0D263D] to-[#141414] h-64 rounded-xl">
+                <div className="flex h-min min-h-min justify-center items-start flex-col bg-green-500">
+                        <p>betton</p>
+                        <div className="flex h-min min-h-min justify-center items-center flex-col p-2 bg-gradient-to-b from-[#FFD355] via-[#FF8D55] via-[#D33469] to-[#40348A] h-64 rounded-xl">
+                        <p>Feel the thrill,</p>
+                        <p>place the bet,</p> 
+                        <p>take the victory lap!</p>
+                    </div>
+                    </div>
+                    <div className="flex h-min min-h-min justify-center items-center flex-col p-2 bg-white rounded">
+                    
+                    </div>
+                </div>
+            </div>
         </div>
     </>
     )
