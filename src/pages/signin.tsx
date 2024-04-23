@@ -24,7 +24,8 @@ const SignIn : NextPage = () => {
 
     return (
         <>
-        <div className="flex h-full min-h-full justify-center items-center flex-col">
+        <div className="flex h-full min-h-full justify-center">
+            <div className="border border-blue-300 flex h-min min-h-min justify-center items-center flex-col">
             <h2>Sign In</h2>
             Email
             <input type="text" placeholder="email"  className="rounded border border-orange-300" onBlur={(e) => { setEmail(e.target.value) }}/>
@@ -35,6 +36,7 @@ const SignIn : NextPage = () => {
 
             <br></br>
             <Link href="/signup">Sign Up</Link>
+            </div>
         </div>
     </>
     )
