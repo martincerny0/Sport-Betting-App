@@ -9,19 +9,26 @@ import LatestBets from "~/common/modules/components/Bets/LatestBets";
 import AllGames from "~/common/modules/components/Games/AllGames";
 import MyBets from "~/common/modules/components/Bets/MyBets";
 import { useState } from "react";
+import { get } from "http";
 
 
 export default function Home() {
 
+  const [gameId, setGameId] = useState("clva02gmo000a107nrdpjy1n1");
+
   const { data } = useSession();
 
-  const id = "erfhurzh14erweio";
-  const gameById = api.game.getGameById.useQuery(id);
-
+  const gameById = api.game.getGameById.useQuery(gameId);
+  const updateMutation = api.game.updateGame.useMutation();
+  const updateBetMutation = api.bet.updateBets.useMutation();
   const betMutation =  api.bet.createBet.useMutation();
   const gameMutation = api.game.createGame.useMutation();
+  const betsOnGame = api.bet.getBetsByGameId.useQuery({gameId});
 
-  const [showMyBets, setShowMyBets] = useState(false);
+  const allGamesQuery = api.game.getAllGames.useQuery();
+console.log(betsOnGame.data);
+ 
+  const [showMyBets, setShowMyBets] = useState(true);
 
 
   const userId = data?.user?.id ?? "-";
@@ -45,6 +52,46 @@ export default function Home() {
     });
     Router.reload();
   }
+  const updateGame = async () => {
+    const status = "Completed";
+    const team1Score = 1444;
+    const team2Score = 144;   
+          
+      const response = updateMutation.mutateAsync({
+          id: gameId,
+          team1Score: 1000,
+          team2Score: 4,
+          currentIngameTime: 45,
+          status: status,
+      });
+      console.log(response);
+      if(status === "Completed"){
+        await updateBets(gameId, team1Score, team2Score);
+      }
+
+    // Router.reload();
+  }
+
+  const updateBets = async (gameId: string, Team1Score: number, Team2Score: number) => {
+
+    const gameWinner = Team1Score > Team2Score ? "team1" : "team2";
+    console.log(gameWinner);
+    console.log(Team1Score);
+    console.log(Team2Score);
+    const gameScore = Team1Score + Team2Score;
+
+  
+
+    await updateBetMutation.mutateAsync({gameId: gameId, bets: betsOnGame.data??[], gameWinner: gameWinner, gameScore: gameScore});
+    return;
+ }
+
+  // const Bets = api.bet.getBetsByGameId.useQuery({gameId});
+
+  // const getBetsByGameId = () => {
+  //   console.log(Bets);
+  //   return;
+  // }
   return (
     <>
       <Head>
@@ -57,17 +104,21 @@ export default function Home() {
         <div>
           {showMyBets ?
           <>
-            <LatestBets></LatestBets>
             <AllGames></AllGames> 
+            <LatestBets></LatestBets>
+
           </>
      
             :
             <MyBets></MyBets>
         }
     
-          <button onClick={async () => { await createGame()}}>Create game</button> 
+          {/* <button onClick={async () => { await createGame()}}>Create game</button>  */}
           <br></br>
           <button onClick={() => { setShowMyBets(!showMyBets) }}>My Bets Toggle</button>
+          <br></br>
+          <button onClick={async () => { await updateGame()}}>Update Game</button>
+          {/* <button onClick={() => { getBetsByGameId()}} >Get bets on game</button> */}
         </div>
     </Layout>
     </>

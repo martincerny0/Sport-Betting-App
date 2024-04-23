@@ -4,7 +4,11 @@ import {
     publicProcedure,
   } from "~/server/api/trpc";
 
-import { z } from "zod";
+import { promise, z } from "zod";
+import { api } from "~/utils/api";
+import { Prisma } from "@prisma/client";
+
+import { PrismaClient } from '@prisma/client';
 
 
 
@@ -40,13 +44,76 @@ export const BetRouter = createTRPCRouter({
                 userId: input.userId,
                 odds: odds,
                 potentialWin: input.amount * odds,
+                type: "win/lose",
+                prediction: "team1",
             },
         });
         return response;
     }),
+    updateBets: publicProcedure
+    .input(z.object({
+        gameId: z.string(),
+        gameWinner: z.string(),
+        gameScore: z.number(),
+        bets: z.array(z.object({
+            id: z.string(),
+            type:z.string(),
+            prediction: z.string(),
+            userId: z.string(),
+        })
+        ),    
+    }))
+    .mutation(async ({ input, ctx }) => {
+        let result = "lost";
+        await Promise.all(input.bets.map(async (bet) => {
+            switch(bet.type){
+                case "win":
+                    if(input.gameWinner === bet.prediction){
+                        result = "won";
+                    }
+                    break;
+                case "lose":
+                    if(input.gameWinner !== bet.prediction){
+                        result = "won";
+                    }
+                    break;
+                case "over":
+                    if(input.gameScore > parseInt(bet.prediction)){
+                        result = "won";
+                    }
+                    break;
+                case "under":
+                    if(input.gameScore < parseInt(bet.prediction)){
+                        result = "won";
+                    }
+                    break;
+            }
+            await ctx.db.bet.update({
+                where: { id: bet.id },
+                data: {
+                    result: result,  
+                },
+            });
+        }));
+        return;
+    }),
+    getBetsByGameId: publicProcedure
+    .input(z.object({ 
+        gameId: z.string().min(1) 
+    }))
+    .query(({ input, ctx }) => {
+        return ctx.db.bet.findMany({
+            where: { gameId: input.gameId },
+        });
+    }),
     
 });
 
+    // const getBetsByGameId = async (gameId: string) => {
+    //     const Bets = api.bet.getBetsByGameId.useQuery({gameId});
+    //     return;
+    // }
+  
 
 
 

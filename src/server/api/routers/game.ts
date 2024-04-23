@@ -5,19 +5,26 @@ import {
   } from "~/server/api/trpc";
 
   import { z } from "zod";
-import { Game } from "@prisma/client";
-import { resolve } from "path";
-import { start } from "repl";
-import { create } from "domain";
-
-
 
 export const GameRouter = createTRPCRouter({
     getAllGames: publicProcedure
     .query(({ ctx }) => {
         return ctx.db.game.findMany();
     }),
+    getGamesByFilter: publicProcedure
+    .input(z.object({
 
+        payload: z.string().min(1),
+        sport: z.string().min(1),
+
+    }))
+    .query(({ ctx, input }) => {
+        return ctx.db.game.findMany({
+            where: {
+                sport: input.sport,
+            }
+        });
+    }),
     getGameById: publicProcedure
     .input(z.string())
     .query(({ ctx, input }) => {
@@ -50,18 +57,25 @@ export const GameRouter = createTRPCRouter({
             team1Score: z.number().min(0),
             team2Score: z.number().min(0),
             currentIngameTime: z.number().min(1),
+            status: z.string().min(1),
         }))
         .mutation(async ({ ctx, input }) => {
-        return ctx.db.game.update({
-            where: { id: input.id },
-            data: {
-                team1Score: input.team1Score,
-                team2Score: input.team2Score,
-                currentIngameTime: input.currentIngameTime,
-            }
-        })
+    
+            const response = ctx.db.game.update({
+                where: { id: input.id },
+                data: {
+                    team1Score: input.team1Score,
+                    team2Score: input.team2Score,
+                    currentIngameTime: input.currentIngameTime,
+                    status: input.status,
+                }
+            })
+            return response;
     }),
 })
+
+
+
 
 
 

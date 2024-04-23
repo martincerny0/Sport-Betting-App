@@ -72,7 +72,7 @@ model Game {
   currentIngameTime Int?    @default(0)
   status        String    @default("Scheduled")// e.g., "Scheduled", "Ongoing", "Completed"
   startTime DateTime
-  winner        String?   // e.g., "Team1", "Team2", "Draw"
+//   winner        String?   // e.g., "Team1", "Team2", "Draw"
   odds          Float     @default(1.0)
   bets          Bet[]
   createdAt     DateTime  @default(now())
@@ -81,6 +81,8 @@ model Game {
 
 model Bet {
   id            String    @id @default(cuid())
+  type          String    // "Win/Lose ,  "Over/Under"
+  prediction    String    // "Team1", "Team2", X, -X;
   userId        String
   user          User      @relation(fields: [userId], references: [id])
   gameId        String
