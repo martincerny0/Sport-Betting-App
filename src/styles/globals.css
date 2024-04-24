@@ -10,6 +10,35 @@
 body{
     -webkit-font-smoothing: antialiased;
 }
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+.ico-size-14 {
+    font-size: 14px;
+  }
+  .ico-size-16 {
+    font-size: 16px;
+  }
+  .ico-size-20 {
+    font-size: 20px;
+  }
+  .ico-size-24 {
+    font-size: 24px;
+  }
+  .ico-size-28 {
+    font-size: 28px;
+  }
+  .ico-size-32 {
+    font-size: 32px;
+  }
+  .ico-size-56 {
+    font-size: 56px;
+  }
 
 @font-face {
     font-family: 'Sansation Regular';
