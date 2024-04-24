@@ -7,7 +7,9 @@
     flex-direction: column;
     height: 100%;
 }
-
+body{
+    -webkit-font-smoothing: antialiased;
+}
 
 @font-face {
     font-family: 'Sansation Regular';
