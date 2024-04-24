@@ -73,7 +73,10 @@ model Game {
   status        String    @default("Scheduled")// e.g., "Scheduled", "Ongoing", "Completed"
   startTime DateTime
 //   winner        String?   // e.g., "Team1", "Team2", "Draw"
-  odds          Float     @default(1.0)
+  oddsTeam1Win          Float     @default(1.0)
+  oddsTeam2Win          Float     @default(1.0)
+  oddsOver              Float     @default(1.0)
+  oddsUnder             Float     @default(1.0)
   bets          Bet[]
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt

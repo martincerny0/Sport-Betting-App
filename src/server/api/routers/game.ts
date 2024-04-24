@@ -38,7 +38,10 @@ export const GameRouter = createTRPCRouter({
         team1Name: z.string().min(1),
         team2Name: z.string().min(1),
         startTime: z.string().min(1),
-        odds: z.number().min(1),
+        oddsTeam1Win: z.number().min(1),
+        oddsTeam2Win: z.number().min(1),
+        oddsOver: z.number().min(1),
+        oddsUnder: z.number().min(1),
     }))
     .mutation( async ({ ctx, input }) => {
         return ctx.db.game.create({
@@ -47,7 +50,10 @@ export const GameRouter = createTRPCRouter({
                 team1Name: input.team1Name,
                 team2Name: input.team2Name,
                 startTime: input.startTime,
-                odds: input.odds,
+                oddsTeam1Win: input.oddsTeam1Win,
+                oddsTeam2Win: input.oddsTeam2Win,
+                oddsOver: input.oddsOver,
+                oddsUnder: input.oddsUnder,
             }
     })
     }),

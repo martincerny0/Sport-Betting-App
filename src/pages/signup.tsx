@@ -2,6 +2,7 @@ import { NextPage } from "next";
 import Link from "next/link";
 import { useState } from "react";
 import { api } from "~/utils/api";
+import Head from "next/head";
 
 const SignUp : NextPage = () => {
 
@@ -27,6 +28,10 @@ const SignUp : NextPage = () => {
 
     return (
         <>
+            <Head>
+                <title>Sign Up | Betton</title>
+                <link rel="icon" href="/favicon.ico" />
+            </Head>
             <div className="flex h-full min-h-full justify-center items-center flex-col">
                 <h2>Sign Up</h2>
                 Email

@@ -28,13 +28,11 @@ const SignIn : NextPage = () => {
         <Head>
         <title>Sign In | kokotMates</title>
         <link rel="icon" href="/favicon.ico" />
-
         </Head>
         <div className="flex h-full min-h-full justify-center items-center flex-col bg-gradient-to-b from-[#0D263D] to-[#141414]">
             <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] h-64 rounded-xl">
                 <div className="flex h-min min-h-min justify-center items-center flex-row px-5 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
                 <div className="flex h-min min-h-min justify-center items-start flex-col">
-                        
                         <p className="font-extrabold text-xl my-1">betton</p>
                         <div className="text-xl flex min-h-min justify-center items-center flex-col p-2 mb-8 py-[85px] bg-gradient-to-b font-bold  from-[#FFD355] via-[#D33469] to-[#40348A] h-64 rounded-xl opacity-90">
                         <p className="leading-tight text-[#FAECDE]">Feel the thrill,</p>
@@ -53,8 +51,9 @@ const SignIn : NextPage = () => {
                     <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light" type="email"></input>
                     </div>
                     <p className="mt-2">PASSWORD</p>
-                    <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-lg">
+                    <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] relative bg-gradient-to-b  from-[#EEBC8A] to-[#666666] rounded-lg">
                     <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light" type="password"></input>
+                    <div className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] absolute right-0 rounded-lg px-1 p-0.5"><button className="f7-icons ico-size-20">eye_slash</button></div>
                     </div>
                     </div>
                     <button className=" bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black" onClick={async () => { await authorizeUser() }}>SIGN IN</button>

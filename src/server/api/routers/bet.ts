@@ -4,7 +4,7 @@ import {
     publicProcedure,
   } from "~/server/api/trpc";
 
-import { promise, z } from "zod";
+import { number, promise, z } from "zod";
 import { api } from "~/utils/api";
 import { Prisma } from "@prisma/client";
 
@@ -33,9 +33,31 @@ export const BetRouter = createTRPCRouter({
         gameId: z.string(),
         amount: z.number(),
         userId: z.string(),
+        prediction: z.string(),
+        type: z.string(),
+        oddsTeam1Win: z.number(),
+        oddsTeam2Win: z.number(),
+        oddsOver: z.number(),
+        oddsUnder: z.number(),
     }))
     .mutation(async ({ input, ctx }) => {
-        const odds = 4;
+
+        let odds = 1;
+
+        switch(input.type){
+            case "win":
+                input.prediction === "team1" ? odds = input.oddsTeam1Win : odds = input.oddsTeam2Win;
+                break;
+            case "lose":
+                input.prediction === "team1" ? odds = input.oddsTeam2Win : odds = input.oddsTeam1Win;
+                break;
+            case "over":
+                odds = input.oddsOver;
+                break;
+            case "under":
+                odds = input.oddsUnder;
+            break;
+        }
 
         const response = await ctx.db.bet.create({
             data: {
@@ -44,8 +66,8 @@ export const BetRouter = createTRPCRouter({
                 userId: input.userId,
                 odds: odds,
                 potentialWin: input.amount * odds,
-                type: "win/lose",
-                prediction: "team1",
+                type: input.type,
+                prediction: input.prediction,
             },
         });
         return response;

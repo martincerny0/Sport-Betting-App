@@ -2,7 +2,6 @@ import React from 'react';
 import { api } from '~/utils/api';
 import { useSession } from 'next-auth/react';
 import Router from 'next/router';
-import { DateTime } from 'next-auth/providers/kakao';
 
 interface GameProps {
     gameId: string;
@@ -14,20 +13,39 @@ interface GameProps {
     team1Name: string;
     team2Name: string;
     startTime: Date;
-    odds: number;
+    oddsTeam1Win: number;
+    oddsTeam2Win: number;
+    oddsOver: number;
+    oddsUnder: number;
 }
 
 
-const Game : React.FC<GameProps> = ({gameId, team1Score, team2Score, currentIngameTime, status, sport, team1Name, team2Name, startTime, odds}) => {
+const Game : React.FC<GameProps> = ({gameId, team1Score, team2Score, currentIngameTime, status, sport, team1Name, team2Name, startTime, oddsTeam1Win, oddsTeam2Win, oddsOver, oddsUnder}) => {
+
+    const { data } = useSession();
 
     const [betType, setBetType] = React.useState("");
-    const [prediction, setPrediction] = React.useState("");
+    const [prediction, setPrediction] = React.useState("team1");
     const [amount, setAmount] = React.useState(0);
+    
+    const odds = betType === "win" ? oddsTeam1Win : betType === "lose" ? oddsTeam2Win : betType === "over" ? oddsOver : oddsUnder;
 
-    const games = api.game.getAllGames.useQuery();
+    const createBetMutation = api.bet.createBet.useMutation();
 
     const createBet = async (gameId : string) => {
-      return;
+        const response = await createBetMutation.mutateAsync({
+            gameId: gameId,
+            amount: amount,
+            userId: data?.user?.id ?? "",
+            type: betType,
+            prediction: prediction,
+            oddsTeam1Win: oddsTeam1Win,
+            oddsTeam2Win: oddsTeam2Win,
+            oddsOver: oddsOver,
+            oddsUnder: oddsUnder,
+        });
+        if(!response) return;
+        Router.reload();
     }
 
     // ----------------------------------
@@ -93,7 +111,7 @@ const Game : React.FC<GameProps> = ({gameId, team1Score, team2Score, currentInga
 
 
     return (
-        <div onBlur={() => {setBetType(""); setPrediction(""); setAmount(0)}} className='border-gray-300 border w-1/12 flex justify-center items-center flex-col'>
+        <div  className='border-gray-300 border w-1/12 flex justify-center items-center flex-col'>
           <div>
             <p>{sport}</p>
             <p>{team1Name} vs {team2Name}</p>
@@ -112,13 +130,30 @@ const Game : React.FC<GameProps> = ({gameId, team1Score, team2Score, currentInga
                 </div>
                 {betType !== "" && (
                   <div className='flex flex-col justify-center items-center'>
-                      <input type="text" placeholder="Prediction" onBlur={(e) => setPrediction(e.target.value)} className='border-black border' />
-                      <input type="number" placeholder="Amount" onBlur={(e) => setAmount(parseInt(e.target.value))} className='border-black border'/>
+                      {(betType === "win" || betType === "lose") && 
+                      <select name="" id="" onChange={(e) => setPrediction(e.target.value)}>
+                      <option value="team1">{team1Name}</option>
+                      <option value="team2">{team2Name}</option>
+                      </select>
+                      }
+                      {(betType === "over" || betType === "under") &&
+                      <>
+                      <input className='border border-black'  type="text" onChange={(e) => setPrediction(e.target.value)} />
+                      </>
+                      }
+                      <input type="text" placeholder="Amount" onChange={(e) => {setAmount(parseInt(e.target.value));}} className='border-black border'/>
+                      <p>potential win: {amount * odds}</p>
                   </div>
                 )}
-                {amount && prediction && (
+                {prediction !== "" && amount !== 0 && !Number.isNaN(amount) && (
                   <button className='bg-orange-300 w-1/2' onClick={async () => { await createBet(gameId) }}>BET</button>    
                   )}
+                  <br></br>
+                  {prediction}
+                  <br></br>
+                  {amount}
+                  <br></br>
+                  {betType}
                 </div>
                 </div>
         </div>
