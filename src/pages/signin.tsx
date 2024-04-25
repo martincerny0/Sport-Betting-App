@@ -28,7 +28,7 @@ const SignIn : NextPage = () => {
     return (
         <>
         <Head>
-        <title>Sign In | kokotMates</title>
+        <title>Sign In | Betton</title>
         <link rel="icon" href="/favicon.ico" />
         </Head>
         <div className="flex h-full min-h-full justify-center items-center flex-col bg-gradient-to-b from-[#0D263D] to-[#141414]">

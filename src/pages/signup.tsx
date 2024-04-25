@@ -85,7 +85,7 @@ const SignUp: NextPage = () => {
                                         </div>
                                         <p className="mt-2">DATE OF BIRTH</p>
                                         <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] relative bg-gradient-to-b  from-[#EEBC8A] to-[#666666] rounded-lg">
-                                            <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type="text" placeholder="DD/MM/YYYY" onChange={(e) => { (e.target.value.length === 2 || e.target.value.length === 5) && (e.target.value += "/") }} onBlur={(e) => { setDateOfBirth(e.target.value) }}></input>
+                                            <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type="text" placeholder="DD/MM/YYYY" maxLength={10}   onChange={(e) => { (e.target.value.length === 2 || e.target.value.length === 5) && (e.target.value += "/") }} onBlur={(e) => { setDateOfBirth(e.target.value) }}></input>
                                         </div>
                                     </div>
                                     <button className=" bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black" onClick={() => ContinueCheck()}>CONTINUE</button>
