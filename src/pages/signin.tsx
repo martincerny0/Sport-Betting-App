@@ -55,9 +55,9 @@ const SignIn : NextPage = () => {
                     <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type="email" placeholder="iloveboobs@betton.com"></input>
                     </div>
                     <p className="mt-2">PASSWORD</p>
-                    <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] relative bg-gradient-to-b  from-[#EEBC8A] to-[#666666] rounded-lg">
+                    <div className={`flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] relative bg-gradient-to-b  from-[#EEBC8A] to-[#666666] rounded-lg ${!inputTypePassword && "bg-gradient-to-b from-[#FFC701] to-[#FF9900]"}`}>
                     <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type={inputTypePassword ? "password" : "text"}></input>
-                    <div className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] absolute right-0 rounded-lg px-1 p-0.5"><button className="f7-icons ico-size-20" onClick={() => setInputType(!inputTypePassword)}>{inputTypePassword ? "eye_slash" : "eye"}</button></div>
+                    <div className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] absolute right-0 rounded-lg px-1 p-0.5 hover:rounded-xl ease-in-out duration-300"><button className={`f7-icons ico-size-20 ease-in-out duration-300 ${!inputTypePassword && "text-black animate-[fadeIn_0.3s_ease-in-out]"}`} onClick={() => setInputType(!inputTypePassword)}>{inputTypePassword ? "eye_slash" : "eye"}</button></div>
                     </div>
                     </div>
                     <button className=" bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black " onClick={async () => { await authorizeUser() }}>SIGN IN</button>
