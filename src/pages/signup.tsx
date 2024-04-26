@@ -4,13 +4,14 @@ import { useState } from "react";
 import { api } from "~/utils/api";
 import Head from "next/head";
 import { ZodError, set, z } from "zod";
-import { url } from "inspector";
 
 const SignUp: NextPage = () => {
 
     const [name, setName] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState("");
+    const [isBackSpaceDown, setIsBackSpaceDown] = useState(false);
     const [nameError, setNameError] = useState("");
+    const [dateOfBirthError, setDateOfBirthError] = useState("");
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -20,7 +21,7 @@ const SignUp: NextPage = () => {
     const [inputTypePassword, setInputType] = useState(true);
     const { mutateAsync, error } = api.user.register.useMutation();
 
-    const fullnameSchema = z.string().min(1, { message: "Fullname cannot be empty" }).max(100, { message: "Fullname cannot exceed 100 characters" });
+    const fullnameSchema = z.string().min(1, { message: "Fullname cannot be empty" }).max(32, { message: "Fullname cannot exceed 32 characters" });
     const dateOfBirthSchema = z.string().min(10, { message: "Invalid date of birth" }).max(10, { message: "Invalid date of birth" });
     const emailSchema = z.string().email({ message: "Invalid email address" });
     const passwordSchema = z.string().min(8, { message: "Password must be at least 8 characters" }).max(100, { message: "Password can't be more than 100 characters" });
@@ -28,21 +29,25 @@ const SignUp: NextPage = () => {
     const ContinueCheck = () => {
         try {
             fullnameSchema.parse(name);
+            setNameError("");
         } catch (e) {
             if (e instanceof ZodError) {
-                console.log(e.issues[0]?.message);
-                return;
+                setNameError(e.issues[0]?.message?? "-");
             }
         }
         try {
             dateOfBirthSchema.parse(dateOfBirth);
+            setDateOfBirthError("");
         } catch (e) {
             if (e instanceof ZodError) {
-                console.log(e.issues[0]?.message);
-                return;
+                setDateOfBirthError(e.issues[0]?.message?? "-");
             }
         }
-        setIsContinue(true);
+        if(dateOfBirthError === ""  &&  nameError === "" && name && dateOfBirth) setIsContinue(true);
+        setTimeout(() => {
+            setDateOfBirthError("");
+            setNameError("");
+        }, 2000);
     }
 
     const createUser = async () => {
@@ -56,6 +61,8 @@ const SignUp: NextPage = () => {
         }
         return;
     };
+
+    // {...(isValueSet ? { value: inputValue } : {})}
 
     return (
         <>
@@ -81,11 +88,11 @@ const SignUp: NextPage = () => {
                                     <div className="font-bold text-sm">
                                         <p>FULL NAME</p>
                                         <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-lg">
-                                            <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type="text" placeholder="Joe Biden" onBlur={(e) => setName(e.target.value)}></input>
+                                            <input className={`text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2 ${nameError && "placeholder:text-red-500"}`} type="text" placeholder={nameError ? nameError : ""} onChange={(e) => setName(e.target.value)}></input>
                                         </div>
                                         <p className="mt-2">DATE OF BIRTH</p>
                                         <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] relative bg-gradient-to-b  from-[#EEBC8A] to-[#666666] rounded-lg">
-                                            <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type="text" placeholder="DD/MM/YYYY" maxLength={10}   onChange={(e) => { (e.target.value.length === 2 || e.target.value.length === 5) && (e.target.value += "/") }} onBlur={(e) => { setDateOfBirth(e.target.value) }}></input>
+                                            <input className={`text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2 ${dateOfBirthError && "placeholder:text-red-500"}`} type="text" placeholder={dateOfBirthError  ? dateOfBirthError : "DD/MM/YYYY"} maxLength={10} onKeyDown={(e) => {e.key === "backspace" ? setIsBackSpaceDown(true) : ""}}  onChange={(e) => { !/^[0-9\/]*$/.test(e.target.value) ? e.target.value = e.target.value.substring(0, e.target.value.length -1) : (e.target.value.length === 2 || e.target.value.length === 5) && (e.target.value += "/")}} onBlur={(e) => setDateOfBirth(e.target.value)}></input>
                                         </div>
                                     </div>
                                     <button className=" bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black" onClick={() => ContinueCheck()}>CONTINUE</button>
@@ -96,11 +103,11 @@ const SignUp: NextPage = () => {
                                         <div className="font-bold text-sm">
                                             <p>EMAIL</p>
                                             <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-lg">
-                                                <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type="text" placeholder="Biden@Whitehouse.joe" onBlur={(e) => setEmail(e.target.value)}></input>
+                                                <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type="text" value={email} onChange={(e) => setEmail(e.target.value)}></input>
                                             </div>
                                             <p className="mt-2">PASSWORD</p>
                                             <div className={`flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] relative bg-gradient-to-b  from-[#EEBC8A] to-[#666666] rounded-lg ${!inputTypePassword && "bg-gradient-to-b from-[#FFC701] to-[#FF9900]"}`}>
-                                                <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type={inputTypePassword ? "password" : "text"} onBlur={(e) => setPassword(e.target.value)}></input>
+                                                <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type={inputTypePassword ? "password" : "text"} value={password} onChange={(e) => setPassword(e.target.value)}></input>
                                                 <div className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] absolute right-0 rounded-lg px-1 p-0.5 hover:rounded-xl ease-in-out duration-300"><button className={`f7-icons ico-size-20 ease-in-out duration-300 ${!inputTypePassword && "text-black animate-[fadeIn_0.3s_ease-in-out]"}`} onClick={() => setInputType(!inputTypePassword)}>{inputTypePassword ? "eye_slash" : "eye"}</button></div>
                                             </div>
                                             <p className="mt-2">CONFIRM PASSWORD</p>

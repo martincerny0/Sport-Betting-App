@@ -12,42 +12,34 @@ const MytBets : React.FC = () => {
     const [gameId, setGameId] = useState(""); 
     const getGameById = api.game.getGameById.useQuery(gameId);
 
-    const [fullBetInfo, setFullBet] = useState<{ gameDetails: {}; id: string; type: string; prediction: string; userId: string; gameId: string; result: string | null; amount: number; potentialWin: number; odds: number; createdAt: Date; }[]>([]);
+    const getGameInfo = async () => {
+        try {
+           await getGameById.refetch();
+            // Update state or perform actions with fetched data
+          } catch (error) {
+            console.error('Error fetching data:', error);
+            // Handle errors appropriately
+          }
+    }
 
-       
-        useEffect(() => {
-            const fetchGameDetails = async () => {
-                if (userBets.data) {
-                    const enrichedBets = await Promise.all(userBets.data.map(async (bet) => {
-                        setGameId(bet.gameId);
-                        // Wait for the game details to be fetched
-                        await getGameById.refetch();
-                        return {
-                            ...bet,
-                            gameDetails: getGameById.data || {}
-                        };
-                    }));
-                    setFullBet(enrichedBets);
-                }
-            };
-    
-        });
+    useEffect(() => {
+        getGameInfo();
+    }, [userId]);
 
     return (
         <div className="flex flex-row border ">
-            {bets.data?.map((bet) => (
-                <div key={bet.id} className="border w-3/4 border-black">
-                    <p>Game ID: {bet.gameId}</p>
-                    <p>Amount: {bet.amount}</p>
-                    <p>User ID: {bet.userId}</p>
-                    <p>Odds: {bet.odds}</p>
-                    <p>Potential Win: {bet.potentialWin}</p>
-                    <p>{bet.type}</p>
-                    <p>Prediction: {bet.prediction}</p>
-                    <p>result: {bet.result?? "Pending"}</p>
-                    <br></br>
+            {userBets.data?.map((bet) => (
+                <div key={bet.id} className="flex flex-col border">
+                    <div>{bet.gameId}</div>
+                    <div>{bet.amount}</div>
+                    <div>{bet.type}</div>
+                    <div>{bet.result}</div>
+                    
                 </div>
             ))}
+
+            
+
         </div>
     )
 }
