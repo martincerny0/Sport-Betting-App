@@ -17,12 +17,12 @@ To try the app, follow these steps:
 **Deposits:** Although you can deposit to your account if you run out of balance. note that the payment wall is not implemented, so no real money is required for deposits.
 
 
-You can try the project live at [http://xxx.xxx](http://xxx.xxx).
+You can try the project live at [http://-](http://-).
 
 ## Credits
 
 - **Full Stack Development:** [Martin Černý](https://github.com/Cernousek0)
-- **Front End Development && UI/UX Design:** [Jiří Barlog](https://github.com/jirkoseu)
+- **Front End Development & UI/UX Design:** [Jiří Barlog](https://github.com/jirkoseu)
 
 
 ## Learn More About the T3 Stack

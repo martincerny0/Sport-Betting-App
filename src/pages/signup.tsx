@@ -18,7 +18,7 @@ const SignUp: NextPage = () => {
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [isBackSpaceDown, setIsBackSpaceDown] = useState(true);
-    const passwordConfirmRef = useRef(null);
+    const passwordConfirmRef = useRef<HTMLInputElement>(null);
 
     // errors
     const [nameError, setNameError] = useState("");
@@ -89,7 +89,7 @@ const SignUp: NextPage = () => {
         const inputs = { email: email, password: password, passwordConfirm: passwordConfirm };
         if (inputs.password !== inputs.passwordConfirm) {
             setPasswordConfirmError("Passwords do not match");
-            passwordConfirmRef.current.value = "";
+            if(passwordConfirmRef.current)passwordConfirmRef.current.value = "";
         }
         try {
             secondPageSchema.parse(inputs);

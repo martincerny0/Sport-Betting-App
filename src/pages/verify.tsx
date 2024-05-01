@@ -1,62 +1,60 @@
-import type { NextApiRequest, NextApiResponse, NextPage } from 'next'
-import { Base64 } from 'js-base64';
-import { api } from "~/utils/api";
+// pages/confirm-email/[hash].tsx
+
+import { GetServerSideProps, NextPage } from 'next';
 import { useRouter } from 'next/router';
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { Base64 } from 'js-base64'; // for base64 decoding
 
-
-
-// export default function handler(req: NextApiRequest, res: NextApiResponse) {
-
-  
-//   const hashedEmail = req.query.e as string;
-//   const email = Base64.decode(hashedEmail);
-//   // const hashedEmail = "bWFydGluY2VybnlAdm9sbnkuY3o";
-//   // const email = Base64.decode(hashedEmail); 
-//   const verifyEmail = api.user.verifyEmail.useMutation();
-//   verifyEmail.mutate({ email: email });
-//   res.status(200).json( email );
-// }
-
-const Verify : NextPage = () => {
-
-  const verifyEmailMutation = api.user.verifyEmail.useMutation();
-  const isEmailVerifiedQuery = api.user.isEmailVerified.useQuery({ email: ""});
-  const [canRefetch, setCanRefetch] = useState(false);
-  const [email, setEmail] = useState("");
-
-  canRefetch && (async () => await isEmailVerified());
-
-  const isEmailVerified = async () => {
-    await isEmailVerifiedQuery.useQuery({ email: email});
-    console.log(isEmailVerifiedQuery.data);
-  }
-
-  const router = useRouter();
-  const { query } = router;
-
-  useEffect(() => {
-    if (router.isReady) {
-      setCanRefetch(true);
-      // Use `router.query.name` only after confirming router is ready
-
-    }
-  }, [router.isReady, router.query.name]);
-
-  const verifyEmail = () => {
-    const hashedEmail = query.e as string;
-    console.log(hashedEmail);
-    setEmail(Base64.decode(hashedEmail));
-    verifyEmailMutation.mutate({ email: email });
-  }
-
-  return (
-    <div>
-      <h1>Verifying email</h1>
-      <button onClick={verifyEmail}>Verifyedwzhefrgzhýgzerfgfzrgfrz</button>
-    </div>
-  )
+interface ConfirmEmailPageProps {
+  hash: string;
 }
 
-export default Verify;
+const ConfirmEmailPage: NextPage<ConfirmEmailPageProps> = ({ hash }) => {
+  const router = useRouter();
+  const { data: user } = useQuery(['user.get', hash], {
+    fetchOptions: {
+      body: JSON.stringify({ emailHash: hash }), // Pass the hash as request payload
+    },
+  });
+
+  // Use trpc mutation to update user verification status
+  const [confirmEmail] = useMutation('user.confirmEmail', {
+    onSuccess: () => {
+      // Redirect user to a success page or any other page after successful confirmation
+      router.push('/email-confirmed');
+    },
+  });
+
+  // Check if the user exists and if the email is already verified
+  if (user && user.emailVerified) {
+    // If email is already verified, redirect user to another page
+    router.push('/email-already-verified');
+    return null; // Render nothing on this page
+  }
+
+  // If user doesn't exist or email is not verified yet, render a confirmation message or a form
+  return (
+    <div>
+      <h1>Email Confirmation</h1>
+      {user ? (
+        <div>
+          <p>Hello, {user.name}!</p>
+          <button onClick={() => confirmEmail.mutate(hash)}>Confirm Email</button>
+        </div>
+      ) : (
+        <p>Loading...</p>
+      )}
+    </div>
+  );
+};
+
+export const getServerSideProps: GetServerSideProps<ConfirmEmailPageProps> = async ({ params }) => {
+  const { hash } = params;
+
+  return {
+    props: {
+      hash: Array.isArray(hash) ? hash[0] : hash, // Ensure hash is a string
+    },
+  };
+};
+
+export default ConfirmEmailPage;

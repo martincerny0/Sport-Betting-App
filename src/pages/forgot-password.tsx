@@ -12,13 +12,15 @@ import z from "zod";
 
 const ForgotPassword : NextPage = () => {
 
+    // inputs
     const [email, setEmail] = useState("");
     const [emailError, setEmailError] = useState("");
-    const emailRef = useRef(null);	
     const [isContinue, setIsContinue] = useState(false);
     const [isCaptchaVerified, setIsCaptchaVerified] = useState(false);
     const [isFinalMessage, setIsFinalMessage] = useState(false);
+    const emailRef = useRef<HTMLInputElement>(null);	
 
+    // schema
     const emailSchema = z.string().email({ message: "Invalid email address" });
 
     const ContinueCheck = () => {
@@ -29,7 +31,7 @@ const ForgotPassword : NextPage = () => {
             if(e instanceof z.ZodError){
                 console.log(e.errors[0]?.message);
                 setEmailError(e.errors[0]?.message?? "");
-                emailRef.current.value = "";
+                if(emailRef.current) emailRef.current.value = "";
             }
         }
         setTimeout(() => {
@@ -37,7 +39,7 @@ const ForgotPassword : NextPage = () => {
         }, 2000);
     }
 
-    const captchaVerify = async (captchaToken) => {
+    const captchaVerify = async (captchaToken : string | null) => {
        const captchaResponse = await fetch("http://localhost:3000/api/captcha/verify", {
             method: 'POST',
             headers: {
@@ -58,7 +60,6 @@ const ForgotPassword : NextPage = () => {
             body: JSON.stringify({key: process.env.NEXT_PUBLIC_EXTERNAL_API_KEY, recipient: email})
         });
         emailResponse.status === 200 ? setIsFinalMessage(true) : toast.error("There was some error sending the email. <br> Please try again later.");
-        console.log(emailResponse);
     }
    
 
@@ -88,6 +89,7 @@ const ForgotPassword : NextPage = () => {
                     {isFinalMessage ? (
                     <>
                     <p className="font-bold text-sm">If the email you&apos;ve provided <br /> is associated with an account <br/>  you will receive  an email with <br/>a password reset link.</p>
+                    <Link className="font-bold text-xs mt-8 hover:text-[#FFC701] ease-in-out duration-300" href="/signin">GO BACK TO SIGN IN</Link>
                     </>) : (
                     <>
                     <ReCAPTCHA theme="dark" sitekey={process.env.NEXT_PUBLIC_GOOGLE_RECAPTCHA_SITE?? ""}  onChange={captchaVerify} onExpired={() => setIsCaptchaVerified(false)}/>
@@ -105,7 +107,7 @@ const ForgotPassword : NextPage = () => {
                     </div>
                     </div>
                     <button className=" bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black" onClick={ContinueCheck}>RESET</button>
-                    <Link className="font-bold text-xs mt-2 hover:text-[#FFC701] ease-in-out duration-300" href="/signup">SIGN IN</Link></>)}      
+                    <Link className="font-bold text-xs mt-2 hover:text-[#FFC701] ease-in-out duration-300" href="/signin">SIGN IN</Link></>)}      
                 
                     </div>
                 </div>

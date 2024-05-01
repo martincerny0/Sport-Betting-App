@@ -11,7 +11,7 @@ const SignIn : NextPage = () => {
     const [email, setEmail] = useState("martincerny@volny.cz");
     const [password, setPassword] = useState("Magdalenka");
     const [passwordError, setPasswordError] = useState("");
-    const passwordRef = useRef(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
 
 
     const [inputTypePassword, setInputType] = useState(true);
@@ -30,7 +30,7 @@ const SignIn : NextPage = () => {
         setPasswordError("Invalid email or password");
         setPassword("");
         setInputType(true);
-        passwordRef.current.value = "";
+        if(passwordRef.current) passwordRef.current.value = "";
         setTimeout(() => {
             setPasswordError("");
         }, 2000);
