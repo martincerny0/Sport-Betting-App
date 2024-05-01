@@ -14,7 +14,7 @@ If you believe you've found a security vulnerability in our project, dont hesita
 
 To report a vulnerability, please follow these steps:
 
-1. **Privately Disclose**: Please do not create a public GitHub issue for the vulnerability. Instead, privately disclose the details to us by emailing [github@mcerny,dev](mailto:github@mcerny.dev)
+1. **Privately Disclose**: Please do not create a public GitHub issue for the vulnerability. Instead, privately disclose the details to us by emailing [github@mcerny.dev](mailto:github@mcerny.dev)
 
 2. **Include Details**: When reporting the vulnerability, please include as much detail as possible. This should include a name of the project, description of the vulnerability, steps to reproduce it, and any potential impact it may have.
 
