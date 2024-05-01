@@ -5,13 +5,13 @@ import { api } from '~/utils/api';
 
 const AllGames: React.FC = () => {
 
-    const AllGames = api.game.getAllGames.useQuery();
+    const AllGamesArr = api.game.getAllGames.useQuery();
 
 
     return (
         
         <div className="flex flex-row justify-center">
-            {AllGames.data?.map((game) => (
+            {AllGamesArr.data?.map((game) => (
                 <Game
                     key={game.id}
                     gameId={game.id}

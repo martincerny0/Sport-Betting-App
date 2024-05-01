@@ -1,6 +1,6 @@
 import { NextPage } from "next";
+import { Suspense } from "react";
 import MytBets from "~/common/modules/components/Bets/MyBets";
-import Nav from "~/common/modules/components/Nav/Nav";
 
 
 const Account : NextPage = () => {

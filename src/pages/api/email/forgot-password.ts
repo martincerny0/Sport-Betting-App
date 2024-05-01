@@ -1,11 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import nodemailer from 'nodemailer';
-import { Base64 } from 'js-base64';
-
 
 interface RequestBody {
         key: string;
-        email: string;
+        recipient: string;
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -13,10 +11,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
   
-  const { key, email } = req.body as RequestBody;
+  const { key, recipient } = req.body as RequestBody;
   if(key !== process.env.EXTERNAL_API_KEY) {res.status(401).json({ error: 'Unauthorized' }); }
+  const email = recipient;
   
-  const hashedEmail = Base64.encodeURI(email); 
   try {
     const transporter = nodemailer.createTransport({
       service: process.env.EMAIL_SERVICE,
@@ -30,8 +28,11 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     const mailOptions = {
       from: "martanek500game@gmail.com",
       to: "martincerny@volny.cz",
-      subject: 'Email Verification',
-      text: `You are receiving this because you (or someone else) have requested the verification of your email address.\n\n go to this link to verify your email address\n\n http://localhost:3000/verify-email?e=${hashedEmail}\n\n`,
+      subject: 'Password Reset',
+      text: 'You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n'
+      + 'Please click on the following link, or paste this into your browser to complete the process:\n\n'
+      + `http://localhost:3000/reset-password?email=${email}\n\n`
+      + 'If you did not request this, please ignore this email and your password will remain unchanged.\n',
     };
     
     transporter.sendMail(mailOptions, (error, info) => {

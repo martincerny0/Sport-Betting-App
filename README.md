@@ -1,29 +1,34 @@
-# Create T3 App
+# Sport Betting App using T3 Stack
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+This is a sports betting app developed using the T3 Stack, utilizing TypeScript and NextAuth. Bet on your favorite sports, choose team wins, losses, or over/under scores with our intuitive interface.
+The project uses PostgreSQL as its database. Additionally, it integrates Nodemailer for handling email communications.
 
-## What's next? How do I make an app with this?
+## Try the Sports Betting App 
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+To try the app, follow these steps:
+1. **Sign Up:** Register an account to get started.
+2. **Verify Email:** Check your email to verify your account.
+3. **Sign In:** Once verified, log in.
+4. **Bet:** Now you're set to bet, Dont become addicted!
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+**Initial Balance:** Every user starts with a balance of $10,000, which can be used for betting.
+**Deposits:** Although you can deposit to your account if you run out of balance. note that the payment wall is not implemented, so no real money is required for deposits.
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
 
-## Learn More
+You can try the project live at [http://xxx.xxx](http://xxx.xxx).
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## Credits
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+- **Full Stack Development:** [Martin Černý](https://github.com/Cernousek0)
+- **Front End Development && UI/UX Design:** [Jiří Barlog](https://github.com/jirkoseu)
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
 
-## How do I deploy this?
+## Learn More About the T3 Stack
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+To further understand the T3 Stack, explore the following resources:
+
+- **[Official T3 Stack Documentation](https://create.t3.gg/)**
+- **[Learning Resources for T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available)** — Includes comprehensive tutorials.
+
+Visit the **[create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app)** to contribute or provide feedback.
+

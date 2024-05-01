@@ -55,11 +55,13 @@ model User {
     name          String
     email         String   @unique
     password      String
-    emailVerified DateTime?
+    dateOfBirth   DateTime @db.Date
+    emailVerified DateTime? @updatedAt
+    dateOfRegistration DateTime @default(now())
     accounts      Account[]
     sessions      Session[]
     bets          Bet[]
-    balance      Float    @default(0)
+    balance      Float    @default(10000)
 }
 
 model Game {

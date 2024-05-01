@@ -4,65 +4,138 @@ import { useState } from "react";
 import { api } from "~/utils/api";
 import Head from "next/head";
 import { ZodError, set, z } from "zod";
+import { useRef } from "react";
+import { toast } from "sonner";
+import { TRPCClientError } from "@trpc/client";
+import { send } from "process";
 
 const SignUp: NextPage = () => {
 
+    // inputs
     const [name, setName] = useState("");
     const [dateOfBirth, setDateOfBirth] = useState("");
-    const [isBackSpaceDown, setIsBackSpaceDown] = useState(false);
-    const [nameError, setNameError] = useState("");
-    const [dateOfBirthError, setDateOfBirthError] = useState("");
-
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
+    const [isBackSpaceDown, setIsBackSpaceDown] = useState(true);
+    const passwordConfirmRef = useRef(null);
 
+    // errors
+    const [nameError, setNameError] = useState("");
+    const [dateOfBirthError, setDateOfBirthError] = useState("");
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+    const [passwordConfirmError, setPasswordConfirmError] = useState("");
+
+
+    // utils
     const [isContinue, setIsContinue] = useState(false);
+    const [isFinalMessage, setIsFinalMessage] = useState(false);
     const [inputTypePassword, setInputType] = useState(true);
+    const [emailResend, setEmailResend] = useState(false);
     const { mutateAsync, error } = api.user.register.useMutation();
 
-    const fullnameSchema = z.string().min(1, { message: "Fullname cannot be empty" }).max(32, { message: "Fullname cannot exceed 32 characters" });
-    const dateOfBirthSchema = z.string().min(10, { message: "Invalid date of birth" }).max(10, { message: "Invalid date of birth" });
-    const emailSchema = z.string().email({ message: "Invalid email address" });
-    const passwordSchema = z.string().min(8, { message: "Password must be at least 8 characters" }).max(100, { message: "Password can't be more than 100 characters" });
+    // schemas
+    const firstPageSchema = z.object({
+        fullname:  z.string().min(1, { message: "Fullname cannot be empty" }).max(32, { message: "Fullname cannot exceed 32 characters" }),
+        dateOfBirth: z.string().min(10, { message: "Invalid date of birth" }).max(10, { message: "Invalid date of birth" }),
+    });
+
+    const secondPageSchema = z.object({
+        email: z.string().email({ message: "Invalid email address" }),
+        password: z.string().min(8, { message: "Password must be at least 8 characters" }).max(100, { message: "Password can't be more than 100 characters" }),
+        passwordConfirm: z.string()
+    });
+
+    const sendEmail = async () => {
+        const emailResponse = await fetch(`http://localhost:3000/api/email/verify`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({key: process.env.NEXT_PUBLIC_EXTERNAL_API_KEY, recipient: email})
+        });
+        if(emailResponse.status !== 200){ toast.error("There was some error sending the email. <br> Please try again later."); setEmailResend(true)};
+    }
 
     const ContinueCheck = () => {
-        try {
-            fullnameSchema.parse(name);
-            setNameError("");
-        } catch (e) {
-            if (e instanceof ZodError) {
-                setNameError(e.issues[0]?.message?? "-");
+
+        const input = { fullname: name, dateOfBirth: dateOfBirth };
+
+            try {
+                firstPageSchema.parse(input);
+                if (!/^\d{2}\/\d{2}\/\d{4}$/.test(input.dateOfBirth)){setDateOfBirthError("Invalid format"); return;}
+                setIsContinue(true);
+            } catch (e) {
+                if (e instanceof ZodError) {
+                    e.errors.forEach((error) => {
+                        if (error.path[0] === 'fullname') {
+                        setNameError(error.message);
+                        }
+                        if (error.path[0] === 'dateOfBirth') {
+                        setDateOfBirthError(error.message);
+                        }
+                    });
+                }
             }
-        }
-        try {
-            dateOfBirthSchema.parse(dateOfBirth);
-            setDateOfBirthError("");
-        } catch (e) {
-            if (e instanceof ZodError) {
-                setDateOfBirthError(e.issues[0]?.message?? "-");
-            }
-        }
-        if(dateOfBirthError === ""  &&  nameError === "" && name && dateOfBirth) setIsContinue(true);
+
         setTimeout(() => {
             setDateOfBirthError("");
             setNameError("");
         }, 2000);
     }
 
-    const createUser = async () => {
-        const response = await mutateAsync({
-            email: email,
-            password: password,
-            name: name,
-        });
-        if (error) {
-            return alert("neco je pici");
+    const authorizeUser = async () => {
+        const inputs = { email: email, password: password, passwordConfirm: passwordConfirm };
+        if (inputs.password !== inputs.passwordConfirm) {
+            setPasswordConfirmError("Passwords do not match");
+            passwordConfirmRef.current.value = "";
         }
-        return;
+        try {
+            secondPageSchema.parse(inputs);
+            if(password === passwordConfirm) {
+            try {
+                const response = await mutateAsync({
+                    email: email,
+                    password: password,
+                    name: name,
+                    dateOfBirth: dateOfBirth
+                });
+                setIsFinalMessage(true);
+                await sendEmail();
+            } catch (e) {
+                if(e instanceof TRPCClientError) {
+                    toast.error(e.message ?? "An error occurred, please try again later");
+                }
+            }
+
+            setEmailError("");
+            setPasswordError("");
+            setPasswordConfirmError("");
+        }
+        
+        } catch (e) {
+            if (e instanceof ZodError) {
+                e.errors.forEach((error) => {
+                    if (error.path[0] === 'email') {
+                      setEmailError(error.message);
+                    }
+                    if (error.path[0] === 'password') {
+                      setPasswordError(error.message);
+                    }
+                    if (error.path[0] === 'passwordConfirm') {
+                      setPasswordConfirmError(error.message);
+                    }
+                });
+            }
+        }
+        setTimeout(() => {
+            setEmailError("");
+            setPasswordError("");
+            setPasswordConfirmError("");
+        }, 2000);
     };
 
-    // {...(isValueSet ? { value: inputValue } : {})}
 
     return (
         <>
@@ -91,33 +164,49 @@ const SignUp: NextPage = () => {
                                             <input className={`text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2 ${nameError && "placeholder:text-red-500 animate-[fadeIn_0.3s_ease-in-out]"}`} type="text" placeholder={nameError ? nameError : ""} onChange={(e) => setName(e.target.value)}></input>
                                         </div>
                                         <p className="mt-2">DATE OF BIRTH</p>
-                                        <div className={`flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-lg ${nameError && "bg-gradient-to-b from-[#FF8181] to-[#FF003D]"}`}>
-                                            <input className={`text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2 ${dateOfBirthError && "placeholder:text-red-500 animate-[fadeIn_0.3s_ease-in-out]"}`} type="text" placeholder={dateOfBirthError  ? dateOfBirthError : "DD/MM/YYYY"} maxLength={10} onKeyDown={(e) => {e.key === "backspace" ? setIsBackSpaceDown(true) : ""}}  onChange={(e) => { !/^[0-9\/]*$/.test(e.target.value) ? e.target.value = e.target.value.substring(0, e.target.value.length -1) : (e.target.value.length === 2 || e.target.value.length === 5) && (e.target.value += "/")}} onBlur={(e) => setDateOfBirth(e.target.value)}></input>
+                                        <div className={`flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-lg ${dateOfBirthError && "bg-gradient-to-b from-[#FF8181] to-[#FF003D]"}`}>
+                                            <input className={`text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2 ${dateOfBirthError && "placeholder:text-red-500 animate-[fadeIn_0.3s_ease-in-out]"}`} 
+                                            type="text" 
+                                            value={dateOfBirthError? "" : undefined} 
+                                            placeholder={dateOfBirthError  ? dateOfBirthError : "DD/MM/YYYY"} 
+                                            maxLength={10}  
+                                            onChange={(e) => {isBackSpaceDown ? (e.target.value.length === 3 || e.target.value.length === 6 && e.target.value.slice(0, -2) && setDateOfBirth(e.target.value)) : !/^[0-9\/]*$/.test(e.target.value) ? e.target.value = e.target.value.substring(0, e.target.value.length -1) : (e.target.value.length === 2 || e.target.value.length === 5) && (e.target.value += "/")}} 
+                                            onBlur={(e) => setDateOfBirth(e.target.value)}
+                                            onKeyDown={(e) => {e.key === "Backspace" ? setIsBackSpaceDown(true) : setIsBackSpaceDown(false)}}
+                                            ></input>
                                         </div>
                                     </div>
                                     <button className=" bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black" onClick={() => ContinueCheck()}>CONTINUE</button>
                                     <Link className="font-bold text-xs mt-2 hover:text-[#FFC701] ease-in-out duration-300" href="/signin">SIGN IN</Link>
                                 </>
                             ) : (
+                                <>
+                                {isFinalMessage ? (
                                     <>
+                                    <p className="text-center">Thank you for registering! <br/> We&apos;ve sent a verification email to the address you provided. <br/> Please click on the verification link in the email <br/> to activate your account. <br/><br/> If you don&apos;t see the email, check your spam or junk folder.</p>
+                                    {emailResend && <button className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black" onClick={ () => {setEmailResend(false); sendEmail}}>RESEND EMAIL</button>}
+                                    </>) : (
+                                    <>
+                                    <span></span>
                                         <div className="font-bold text-sm">
                                             <p>EMAIL</p>
-                                            <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-lg">
-                                                <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type="text" value={email} onChange={(e) => setEmail(e.target.value)}></input>
+                                            <div className={`flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-lg ${emailError && "bg-gradient-to-b from-[#FF8181] to-[#FF003D]"}`}>
+                                                <input className={`text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2 ${emailError && "placeholder:text-red-500 animate-[fadeIn_0.3s_ease-in-out]"}`} placeholder={emailError ? emailError : ""}  type="text" onBlur={(e) => setEmail(e.target.value)}></input>
                                             </div>
                                             <p className="mt-2">PASSWORD</p>
-                                            <div className={`flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] relative bg-gradient-to-b  from-[#EEBC8A] to-[#666666] rounded-lg ${!inputTypePassword && "bg-gradient-to-b from-[#FFC701] to-[#FF9900]"}`}>
-                                                <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type={inputTypePassword ? "password" : "text"} value={password} onChange={(e) => setPassword(e.target.value)}></input>
+                                            <div className={`flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] relative bg-gradient-to-b  from-[#EEBC8A] to-[#666666] rounded-lg ${!inputTypePassword && "bg-gradient-to-b from-[#FFC701] to-[#FF9900]"} ${passwordError && "bg-gradient-to-b from-[#FF8181] to-[#FF003D]"}`}>
+                                                <input className={`text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2 ${passwordError && "placeholder:text-red-500 animate-[fadeIn_0.3s_ease-in-out]"}`} placeholder={passwordError ? passwordError : ""} type={inputTypePassword ? "password" : "text"}  onBlur={(e) => setPassword(e.target.value)}></input>
                                                 <div className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] absolute right-0 rounded-lg px-1 p-0.5 hover:rounded-xl ease-in-out duration-300"><button className={`f7-icons ico-size-20 ease-in-out duration-300 ${!inputTypePassword && "text-black animate-[fadeIn_0.3s_ease-in-out]"}`} onClick={() => setInputType(!inputTypePassword)}>{inputTypePassword ? "eye_slash" : "eye"}</button></div>
                                             </div>
                                             <p className="mt-2">CONFIRM PASSWORD</p>
-                                            <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] relative bg-gradient-to-b  from-[#EEBC8A] to-[#666666] rounded-lg">
-                                                <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type={inputTypePassword ? "password" : "text"} onBlur={(e) => setPasswordConfirm(e.target.value)}></input>
+                                            <div className={`flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] relative bg-gradient-to-b  from-[#EEBC8A] to-[#666666] rounded-lg ${passwordConfirmError && "bg-gradient-to-b from-[#FF8181] to-[#FF003D]"}`}>
+                                                <input className={`text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2 ${passwordConfirmError && "placeholder:text-red-500 animate-[fadeIn_0.3s_ease-in-out]"}`} placeholder={passwordConfirmError ? passwordConfirmError : ""} type={inputTypePassword ? "password" : "text"} ref={passwordConfirmRef} onBlur={(e) => setPasswordConfirm(e.target.value)}></input>
                                             </div>
                                         </div>
-                                        <button className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black">SIGN UP</button>
+                                        <button className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black" onClick={async () => await authorizeUser()}>SIGN UP</button>
                                         <p className="hover:cursor-pointer font-bold text-xs mt-2 hover:text-[#FFC701] ease-in-out duration-300" onClick={() => setIsContinue(false)}>GO BACK</p>
                                     </>)}
+                                </>)}
                         </div>
                     </div>
                 </div>

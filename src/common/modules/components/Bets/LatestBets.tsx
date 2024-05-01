@@ -1,4 +1,3 @@
-import { HtmlProps } from "next/dist/shared/lib/html-context.shared-runtime";
 import React from "react";
 import { api } from "~/utils/api";
 

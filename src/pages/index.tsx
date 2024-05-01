@@ -10,6 +10,7 @@ import AllGames from "~/common/modules/components/Games/AllGames";
 import MyBets from "~/common/modules/components/Bets/MyBets";
 import { useState } from "react";
 import MainWindow from "~/common/modules/components/MainWindow/MainWindow";
+import { toast } from "sonner";
 
 export default function Home() {
 
@@ -44,6 +45,7 @@ console.log(betsOnGame.data);
 
     <Layout>
        <MainWindow></MainWindow>
+       <button onClick={() => toast.info("kokote")}>Games</button>
     </Layout>
     </>
   );

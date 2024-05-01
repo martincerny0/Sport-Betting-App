@@ -1,70 +1,43 @@
 import { NextPage } from "next";
 import Head from "next/head";
-import { useState } from "react";
-import { api } from "~/utils/api";
-import { signIn, useSession} from "next-auth/react";
-import { signOut } from "next-auth/react";
-import Nav from "~/common/modules/components/Nav/Nav";
+import { useState, useEffect } from "react";
+import { signIn, useSession, signOut } from "next-auth/react";
 import { getToken } from "next-auth/jwt";
+import { Suspense } from "react";
 
 const Test: NextPage = () => {
-    const { data } = useSession();
+    const [userData, setUserData] = useState<{ id: number; username: string; email: string } | null>(null);
 
-
-    const [name, setName] = useState("lakatos");
-    const [email, setEmail] = useState("mamka@kar.cz");
-    const [password, setPassword] = useState("j");
-
-    const [kar, setKar] = useState("");
-
-    const {mutateAsync, error} = api.user.register.useMutation();
-
-    const signUp = async () =>{
-        
-        const response = await mutateAsync({
-            email: email, 
-            password: password,
-            name: name,
-          });
+    // This function simulates fetching user data with a delay
+    function fetchUserData() {
+        return new Promise<{ id: number; username: string; email: string }>((resolve) => {
+            setTimeout(() => {
+                resolve({
+                    id: 1,
+                    username: 'JohnDoe',
+                    email: 'johndoe@example.com'
+                });
+            }, 3000); // Delay in milliseconds
+        });
     }
 
-    const SignIn = async () => {
-        const result = await signIn('credentials', {
-          email: email,
-          password: password,
-          redirect: false,
-        });
-        if (result?.ok) {
-          return alert('Logged in!');
+    useEffect(() => {
+        async function loadData() {
+            const data = await fetchUserData();
+            setUserData(data);
         }
-        return alert('Failed to log in');
-      }
+        loadData();
+    }, []); // Dependency array is empty, meaning this effect runs only once on mount
 
-      
+    // Handling the loading state
+    // if (!user-Data) {
+    //     return <div>Loading...</div>;
+    // }
 
     return (
-        <>
-        <Nav></Nav>    
-        <div className="flex justify-center items-center h-full flex-col">
-            <h1 className="text-blue-800">Login</h1>
-            <div className="flex flex-col">
-                <input className="border border-black rounded" type="text" placeholder="email" />
-                <input className="border border-black rounded" type="text" placeholder="password" />
-                <button className="border border-yellow-300" onClick={async () => {await SignIn()}}>Log In</button>
-            </div>
-            <h1 className="text-blue-800">Register</h1>
-            <div className="flex flex-col">
-                <input className="border border-black rounded" type="text" placeholder="email" />
-                <input className="border border-black rounded" type="text" placeholder="password" />
-                <button className="border border-yellow-300" onClick={async () => {await signUp()}}>Register</button>
-            </div>
-            Vitejte {data?.user.name}
-
-            <button onClick={async () => { await signOut({ callbackUrl: 'http://localhost:3000/signoutpagesos' }) }}>Log out</button>
-            
-          </div>
-          </>
-        )
+        <div>
+        </div>
+    );
 }
 
 export default Test;

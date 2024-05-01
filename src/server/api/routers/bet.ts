@@ -4,7 +4,7 @@ import {
     publicProcedure,
   } from "~/server/api/trpc";
 
-import { number, promise, z } from "zod";
+import { number, promise, set, z } from "zod";
 import { api } from "~/utils/api";
 import { Prisma } from "@prisma/client";
 
@@ -23,10 +23,73 @@ export const BetRouter = createTRPCRouter({
     ),
     getUserBets: protectedProcedure
     .input(z.object({ userId: z.string() }))
-    .query(({input, ctx }) => {
-        return ctx.db.bet.findMany({
+    .query(async ({input, ctx }) => {
+        
+        const response = await ctx.db.bet.findMany({
             where: { userId: input.userId },
         });
+        setTimeout(() => {
+            console.log(response);
+            return response;
+        }, 2000);
+      
+        // const allInfo = [{
+
+        //     bet: {
+        //         id: "",
+        //         gameId: "",
+        //         amount: 0,
+        //         userId: "",
+        //         odds: 0,
+        //         potentialWin: 0,
+        //         type: "",
+        //         prediction: "",
+        //         result: "",
+        //     },
+        //     game: {
+        //         id: "",
+        //         team1Name: "",
+        //         team2Name: "",
+        //         team1Score: 0,
+        //         team2Score: 0,
+        //         gameScore: 0,
+        //     },
+        // }]
+ 
+
+        // const bets = ctx.db.bet.findMany({
+        //     where: { userId: input.userId },
+        // });
+          
+
+
+
+        // await Promise.all((bets as unknown as { id: string; type: string; prediction: string; userId: string; gameId: string; result: string | null; amount: number; potentialWin: number; odds: number; createdAt: Date; }[]){
+        //     const game = await ctx.db.game.findUnique({
+        //         where: { id: bet.gameId },
+        //     });
+        //     allInfo.push({
+        //         bet: {
+        //             id: bet.id,
+        //             gameId: bet.gameId,
+        //             amount: bet.amount,
+        //             userId: bet.userId,
+        //             odds: bet.odds,
+        //             potentialWin: bet.potentialWin,
+        //             type: bet.type,
+        //             prediction: bet.prediction,
+        //             result: bet.result ?? ""
+        //         },
+        //         game: {
+        //             id: game?.id ?? "",
+        //             team1Name: game?.team1Name ?? "",
+        //             team2Name: game?.team2Name ?? "",
+        //             team1Score: game?.team1Score ?? 0,
+        //             team2Score: game?.team2Score ?? 0,
+        //             gameScore: (game?.team1Score ?? 0) + (game?.team2Score ?? 0)
+        //         }
+        // }));
+
     }),
     createBet: protectedProcedure
     .input(z.object({ 

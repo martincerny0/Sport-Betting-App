@@ -4,6 +4,8 @@ import { type AppType } from "next/app";
 import { Inter } from "next/font/google";
 import 'framework7-icons/css/framework7-icons.css';
 import { api } from "~/utils/api";
+import { Toaster, toast } from 'sonner'
+
 
 import "~/styles/globals.css";
 import Head from "next/head";
@@ -20,10 +22,12 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <main className={`font-sansation`}>
-        <Component {...pageProps} />
-        <Head>
+      <Toaster position="top-left" richColors/>
+      <Head>
           <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3oo0tHTZ0hgXIfdUjC7TIeTOCXhUpvRBd3g&usqp=CAU" />
         </Head>
+        <Component {...pageProps} />
+     
       </main>
     </SessionProvider>
   );
