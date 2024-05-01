@@ -1,7 +1,7 @@
 # Sport Betting App using T3 Stack 📲
 
 This is a sports betting app 📊 developed using the T3 Stack, utilizing TypeScript and NextAuth. Bet on your favorite sports 🏀⚽️🏈, choose team wins, losses, or over/under scores with our intuitive interface.
-The project uses PostgreSQL as its database. Additionally, it integrates Nodemailer for handling email communications.
+The project uses PostgreSQL as its database. Additionally, it integrates [Nodemailer](https://github.com/nodemailer/nodemailer) for handling email communications.
 
 ## Try the Sports Betting App 🚀
 
