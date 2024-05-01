@@ -12,6 +12,8 @@ To try the app, follow these steps:
 4. **Bet:** Now you're set to bet, Dont become addicted!
 
 **Initial Balance:** Every user starts with a balance of $10,000, which can be used for betting.
+
+
 **Deposits:** Although you can deposit to your account if you run out of balance. note that the payment wall is not implemented, so no real money is required for deposits.
 
 
