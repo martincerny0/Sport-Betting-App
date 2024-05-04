@@ -27,7 +27,7 @@ const SignIn : NextPage = () => {
         if (result?.ok) {
             return Router.push("/");
         }
-        setPasswordError("Invalid email or password");
+        setPasswordError(result?.error ?? "Invalid credentials");
         setPassword("");
         setInputType(true);
         if(passwordRef.current) passwordRef.current.value = "";
@@ -40,7 +40,6 @@ const SignIn : NextPage = () => {
         <>
         <Head>
         <title>Sign In | Betton</title>
-        <link rel="icon" href="/favicon.ico" />
         </Head>
         <div className="flex h-full min-h-full justify-center items-center flex-col bg-gradient-to-b from-[#0D263D] to-[#141414]">
             <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
@@ -73,7 +72,7 @@ const SignIn : NextPage = () => {
                     </div>
                     <button className=" bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black " onClick={async () => { await authentication() }}>SIGN IN</button>
                     <Link className="font-bold text-xs mt-2 hover:text-[#FFC701] ease-in-out duration-300" href="/signup">SIGN UP</Link>
-                    <Link className="font-bold text-xs hover:text-[#FFC701] ease-in-out duration-300 mt-8" href="/forgot-password">FORGOT PASSWORD</Link>
+                    <Link className="font-bold text-xs hover:text-[#FFC701] ease-in-out duration-300 mt-8" href="/forgot-password">FORGOT PASSWORD?</Link>
                     </div>
                 </div>
             </div>

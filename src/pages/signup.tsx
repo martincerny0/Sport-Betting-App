@@ -183,8 +183,8 @@ const SignUp: NextPage = () => {
                                 <>
                                 {isFinalMessage ? (
                                     <>
-                                    <p className="text-center">Thank you for registering! <br/> We&apos;ve sent a verification email to the address you provided. <br/> Please click on the verification link in the email <br/> to activate your account. <br/><br/> If you don&apos;t see the email, check your spam or junk folder.</p>
-                                    {emailResend && <button className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black" onClick={ () => {setEmailResend(false); sendEmail}}>RESEND EMAIL</button>}
+                                    <p className="text-center">Thank you for registering! <br/> We&apos;ve sent a verification email to the address you provided. <br/> Please click on the verification link in the email <br/> to activate your account. <br/><br/> If you cant&apos;t find the email, check your spam or junk folder.</p>
+                                    {emailResend ? <button className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black" onClick={ () => {setEmailResend(false); sendEmail}}>RESEND EMAIL</button> :                                     <Link className="font-bold text-xs mt-8 hover:text-[#FFC701] ease-in-out duration-300" href="/signin">GO TO SIGN IN</Link>}
                                     </>) : (
                                     <>
                                     <span></span>

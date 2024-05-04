@@ -17,6 +17,10 @@ export async function middleware(req : NextRequest) {
         return NextResponse.redirect("http://localhost:3000/")
     }
 
+    if(req.nextUrl.pathname === "/verify" && isLoggedIn) {
+        return NextResponse.redirect("http://localhost:3000/")
+    }
+
 }
 
 // export const config = {

@@ -43,21 +43,6 @@ export const userRouter = createTRPCRouter({
         console.log(response);
         return response;
     }),
-    delete: protectedProcedure
-    .input(z.object({
-        userEmail: z.string().email(),
-        }))
-    .mutation(async ({ input, ctx }) => {
-            
-            const response = await ctx.db.user.delete({
-                where: {
-                    email: input.userEmail,
-                },
-            });
-    
-            return response;
-        }
-    ),
     verifyEmail: publicProcedure
     .input(z.object({
         email: z.string().email(),
@@ -146,10 +131,12 @@ export const userRouter = createTRPCRouter({
                 email: input.email,
             },
             select: {
-                emailVerified: !null
+                emailVerified: true,
             },
         });
 
-        return response;
+        if(response?.emailVerified === null) return { emailVerified: false };
+
+        return { emailVerified: true };
     }
 )});

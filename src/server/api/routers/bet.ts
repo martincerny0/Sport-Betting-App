@@ -27,11 +27,9 @@ export const BetRouter = createTRPCRouter({
         
         const response = await ctx.db.bet.findMany({
             where: { userId: input.userId },
+            include: { game: true },
         });
-        setTimeout(() => {
-            console.log(response);
-            return response;
-        }, 2000);
+        return response;
       
         // const allInfo = [{
 
