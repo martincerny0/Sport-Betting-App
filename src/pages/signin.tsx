@@ -11,7 +11,6 @@ const SignIn : NextPage = () => {
     const [email, setEmail] = useState("martincerny@volny.cz");
     const [password, setPassword] = useState("Magdalenka");
     const [passwordError, setPasswordError] = useState("");
-    const passwordRef = useRef<HTMLInputElement>(null);
 
 
     const [inputTypePassword, setInputType] = useState(true);
@@ -30,7 +29,7 @@ const SignIn : NextPage = () => {
         setPasswordError(result?.error ?? "Invalid credentials");
         setPassword("");
         setInputType(true);
-        if(passwordRef.current) passwordRef.current.value = "";
+
         setTimeout(() => {
             setPasswordError("");
         }, 2000);
@@ -61,12 +60,12 @@ const SignIn : NextPage = () => {
                     <h1 className="text-xl font-bold mb-8">SIGN IN</h1>
                     <div className="font-bold text-sm">
                     <p>EMAIL</p>
-                    <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-lg">
-                    <input className="text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2" type="email" onBlur={(e) => setEmail(e.target.value)}></input>
+                    <div className={`flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-lg ${passwordError && "bg-gradient-to-b from-[#FF8181] to-[#FF003D]"}`}>
+                    <input className={`text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2 ${passwordError && "placeholder:text-red-500 animate-[fadeIn_0.3s_ease-in-out]"}`} type="email" onBlur={(e) => setEmail(e.target.value)}></input>
                     </div>
                     <p className="mt-2">PASSWORD</p>
                     <div className={`flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] relative bg-gradient-to-b  from-[#EEBC8A] to-[#666666] rounded-lg ${!inputTypePassword && "bg-gradient-to-b from-[#FFC701] to-[#FF9900]"} ${passwordError && "bg-gradient-to-b from-[#FF8181] to-[#FF003D]"}`}>
-                    <input className={`text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2 ${passwordError && "placeholder:text-red-500 animate-[fadeIn_0.3s_ease-in-out]"}`} placeholder={passwordError ? passwordError : ""} ref={passwordRef} type={inputTypePassword ? "password" : "text"} onChange={(e) => setPassword(e.target.value)}></input>
+                    <input className={`text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2 ${passwordError && "placeholder:text-red-500 animate-[fadeIn_0.3s_ease-in-out]"}`} placeholder={passwordError ? passwordError : ""} value={password} type={inputTypePassword ? "password" : "text"} onChange={(e) => setPassword(e.target.value)}></input>
                     <div style={passwordError ? {display:"none"} : {display: "block"}} className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] absolute right-0 rounded-lg px-1 p-0.5 hover:rounded-xl ease-in-out duration-300"><button className={`f7-icons ico-size-20 ease-in-out duration-300 ${!inputTypePassword && "text-black animate-[fadeIn_0.3s_ease-in-out]"}`} onClick={() => setInputType(!inputTypePassword)}>{inputTypePassword ? "eye_slash" : "eye"}</button></div>
                     </div>
                     </div>

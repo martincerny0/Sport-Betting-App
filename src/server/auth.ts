@@ -83,7 +83,7 @@ export const authOptions: NextAuthOptions = {
             email: credentials?.email
           }
         })
-        if(user?.emailVerified === null) throw new Error("Email not verified");
+        if(user?.emailVerified === null) throw new Error("Email is not verified");
 
         const isVerified = await bcrypt.compare(credentials?.password ?? "", user?.password ?? "");
         if(isVerified){

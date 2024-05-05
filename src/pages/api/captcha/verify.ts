@@ -17,23 +17,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     try {
-        const response = await fetch(`https://recaptchaenterprise.googleapis.com/v1/projects/betton-421818/assessments?key=6LfQQcspAAAAAHOQjOYuSM7cwgPP2HlGIrkHpooI`, {
+        const response = await fetch(`https://recaptchaenterprise.googleapis.com/v1/projects/betton-421818/assessments?key=${process.env.GOOGLE_RECAPTCHA_SECRET}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                event: { token: captchaToken, siteKey: "6LfQQcspAAAAAMxE6-xkjCrmHgdmO1VL8iYUsVDq" }
+                event: { token: captchaToken, siteKey: process.env.GOOGLE_RECAPTCHA_SITE}
             })
         });
-        const data = await response.json(); 
+        
 
-        if (!data.success) {
-            return res.send(400).json({status: 'failed', errors: data.errorMessages}) ;
+        if (response.status !== 200) {
+            return res.send(400);
         }
 
-        return res.status(200).json({status: 'success'});
+        return res.status(200);
     } catch (e) {
-        return res.status(500).json({error: 'Internal Server Error'});
+        return res.status(500);
     }
 }

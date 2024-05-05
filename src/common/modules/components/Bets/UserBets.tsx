@@ -18,7 +18,7 @@ const UserBets : React.FC = () => {
     return (
         <div className="flex flex-row border ">
             {userBets.data?.map((bet) => (
-                <div key={bet.id} className=" flex justify-center w-3/4 flex-col border border-green-400">
+                <div key={bet.id} className="flex justify-center w-3/4 flex-col border border-green-400">
                     {/* <p>Game ID: {bet.gameId}</p> */}
                     <p>Amount: {bet.amount}</p>
                     {/* <p>User ID: {bet.userId}</p> */}
