@@ -1,14 +1,13 @@
 import { NextPage } from "next";
 import Link from "next/link";
-import { signIn, useSession } from "next-auth/react";
+import { signIn } from "next-auth/react";
 import { useState } from "react";
 import Router from "next/router";
 import Head from "next/head";
-import { useRef } from "react";
 
 const SignIn : NextPage = () => {
 
-    const [email, setEmail] = useState("martincerny@volny.cz");
+    const [email, setEmail] = useState("mar@kar.cz");
     const [password, setPassword] = useState("Magdalenka");
     const [passwordError, setPasswordError] = useState("");
 

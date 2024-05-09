@@ -24,7 +24,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
       <main className={`font-sansation`}>
       <Toaster position="top-left" richColors/>
       <Head>
-          <link rel="icon" href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS3oo0tHTZ0hgXIfdUjC7TIeTOCXhUpvRBd3g&usqp=CAU" />
+          <link rel="icon" href="/icon.png" />
         </Head>
         <Component {...pageProps} />
      

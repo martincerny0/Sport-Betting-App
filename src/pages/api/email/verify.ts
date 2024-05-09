@@ -1,11 +1,9 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 import nodemailer from 'nodemailer';
-import { Base64 } from 'js-base64';
 
 
 interface RequestBody {
-        key: string;
-        email: string;
+        token: string;
 }
 
 export default function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -13,10 +11,8 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
   
-  const { key, email } = req.body as RequestBody;
-  if(key !== process.env.EXTERNAL_API_KEY) {res.status(401).json({ error: 'Unauthorized' }); }
+  const { token } = req.body as RequestBody;
   
-  const hashedEmail = Base64.encodeURI(email); 
   try {
     const transporter = nodemailer.createTransport({
       service: process.env.EMAIL_SERVICE,
@@ -31,10 +27,10 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
       from: "martanek500game@gmail.com",
       to: "martincerny@volny.cz",
       subject: 'Email Verification',
-      text: `You are receiving this because you (or someone else) have requested the verification of your email address.\n\n go to this link to verify your email address\n\n http://localhost:3000/verify-email?e=${hashedEmail}\n\n`,
+      text: `You are receiving this because you (or someone else) have requested the verification of your email address.\n\n go to this link to verify your email address\n\n http://localhost:3000/verify?t=${token} \n\n`,
     };
     
-    transporter.sendMail(mailOptions, (error, info) => {
+    transporter.sendMail(mailOptions, (error) => {
       if (error) {
         res.status(500).json({ error: 'Internal Server Error' });
       } else {

@@ -1,8 +1,8 @@
 import { TRPCError } from '@trpc/server';
 import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
 import bcrypt from 'bcrypt';
-import { use } from 'react';
 import { z } from 'zod';
+import crypto from 'crypto';
 
 export const userRouter = createTRPCRouter({
     register: publicProcedure
@@ -19,67 +19,63 @@ export const userRouter = createTRPCRouter({
         const [day, month, year] = input.dateOfBirth.split('/').map(Number);
         const dateOfBirth = new Date(year?? 0, (month?? 0) - 1, (day?? 0) + 1);
 
-        await ctx.db.user.findUnique({
+        const response = await ctx.db.user.findUnique({
             where: {
                 email: input.email,
             },
-        }).then((response) => {
-            if (response) {
+        })
+        if (response) {
                 throw new TRPCError({
                     code: 'FORBIDDEN',
                     message: 'EMAIL ALREADY USED',
                 });
-            }
-        });
-
-        const response = await ctx.db.user.create({
+        }
+        const user = await ctx.db.user.create({
             data: {
                 email: input.email,
                 password: hashed,
                 name: input.name,
                 dateOfBirth: dateOfBirth,
+                inviteCode: crypto.randomBytes(16).toString('hex'),
             }
         });
-        console.log(response);
-        return response;
-    }),
-    verifyEmail: publicProcedure
-    .input(z.object({
-        email: z.string().email(),
-        }))
-    .mutation(async ({ input, ctx }) => {
-        const response = await ctx.db.user.update({
-            where: {
-                email: input.email,
-            },
+        const token = await ctx.db.verificationToken.create({
             data: {
-                emailVerified: new Date(),
-            },
+                userId: user.id,
+                token: crypto.randomBytes(32).toString('hex'),
+            }
         });
-
-        return response;
-    }
-    ),
-    addBalance: publicProcedure
+        return token;
+    }),
+    depositBalance: publicProcedure
     .input(z.object({
             userId: z.string().min(1),
             amount: z.number().min(1),
+            depositCode: z.string().min(1),
         })
     )
     .mutation(async ({ input, ctx }) => {
 
-        const response = await ctx.db.user.update({
+        const depositCode = await ctx.db.depositCode.findUnique({
+            where: {
+                code: input.depositCode,
+            },
+        });
+
+        if(!depositCode) return;
+
+        const finalAmount = input.amount + (input.amount * (depositCode.percentage) / 100);
+
+        return await ctx.db.user.update({
             where: {
                 id: input.userId,
             },
             data: {
                 balance: {
-                    increment: input.amount,
+                    increment: finalAmount,
                 },
             },
         });
-
-        return response;
     }
     ),
     withdrawBalance: publicProcedure
@@ -107,7 +103,7 @@ export const userRouter = createTRPCRouter({
                 break;
         }
         
-        const response = await ctx.db.user.update({
+        return await ctx.db.user.update({
             where: {
                 id: input.userId,
             },
@@ -117,26 +113,73 @@ export const userRouter = createTRPCRouter({
                 },
             },
         });
-
-        return response;
     },
     ),
     isEmailVerified: publicProcedure
     .input(z.object({
-        email: z.string().email(),
+        token: z.string().min(1),
         }))
     .query(async ({ input, ctx }) => {
-        const response = await ctx.db.user.findUnique({
+        const response = await ctx.db.verificationToken.findUnique({
             where: {
-                email: input.email,
+                token: input.token,
             },
-            select: {
-                emailVerified: true,
+            include: {
+                User: true,
+            },
+         
+        });
+        if(!response) throw new TRPCError({
+            code: 'NOT_FOUND',
+            message: 'USER NOT FOUND',
+        });
+
+        if(response?.User?.emailVerified === null) return { emailVerified: false, userId: response?.User?.id};
+        return { emailVerified: true}
+    }
+    ),
+    verifyEmail: publicProcedure
+    .input(z.object({
+        userId: z.string().min(1),
+        }))
+    .mutation(async ({ input, ctx }) => {
+        return await ctx.db.user.update({
+            where: {
+                id: input.userId,
+            },
+            data: {
+                emailVerified: new Date(),
+            },
+        });
+    }
+    ),
+    useInviteCode: publicProcedure
+    .input(z.object({
+        inviteCode: z.string().min(1),
+        }))
+    .mutation(async ({ input, ctx }) => {
+        const expireIn = 48; // in hours
+        
+        const user = await ctx.db.user.findUnique({
+            where: {
+                inviteCode: input.inviteCode,
             },
         });
 
-        if(response?.emailVerified === null) return { emailVerified: false };
+        if(!user) return; 
 
-        return { emailVerified: true };
+        
+        return await ctx.db.depositCode.create({
+            data: {
+                userId: user.id,
+                percentage: 20,
+                code: crypto.randomBytes(4).toString('hex').toUpperCase(),
+                expiresAt: new Date(Date.now() + 1000 * 60 * 60 * expireIn),
+            },
+        });
+   
+
+        
     }
-)});
+    ),
+});

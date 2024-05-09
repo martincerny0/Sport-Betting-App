@@ -1,5 +1,5 @@
-import { useEffect } from 'react';
-import { Base64 } from 'js-base64';
+import { use, useEffect } from 'react';
+import { useState } from 'react';
 import { GetServerSidePropsContext, InferGetServerSidePropsType, NextPage } from 'next';
 import { api } from '~/utils/api';
 import Link from 'next/link';
@@ -7,28 +7,28 @@ import LoadingOverlay from '~/common/modules/components/LoadingOverlay/LoadingOv
 import Head from 'next/head';
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const encrypted = context.query.e ?? "";
-  return { props: { encrypted } };
+  const token = context.query.t as string ?? "";
+  const inviteCode = context.query.invite as string ?? "";
+  return { props: { token, inviteCode } };
 };
 
-const Verify: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ encrypted }) => {
+const Verify: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ token, inviteCode }) => {
 
-  if (!encrypted) encrypted = ""
-
-  const email = Base64.decode(encrypted as string);
-  const { data, error, isLoading } = api.user.isEmailVerified.useQuery({ email });
+  const { data, error, isLoading } = api.user.isEmailVerified.useQuery({token});
+  const useInviteCode = api.user.useInviteCode.useMutation();
   const verifyEmail = api.user.verifyEmail.useMutation();
+  const [alreadyVerified, setAlreadyVerified] = useState(false);
 
   useEffect(() => {
     if (data?.emailVerified) {
       
-      console.log("Email already verified");
-    } else if (!isLoading && !data?.emailVerified) {
-      console.log("Email not verified");
-      // You might want to initiate an action here, like sending a verification request
-      verifyEmail.mutate({ email });
     }
-  }, [data, isLoading, email]);
+    else if (!isLoading && !data?.emailVerified) {
+      verifyEmail.mutate({userId: data?.userId?? ""});
+      if(error) return console.log(error);
+       useInviteCode.mutate({inviteCode: inviteCode});
+    }
+  }, [data, isLoading, token]);
 
 
 
@@ -60,8 +60,8 @@ const Verify: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> =
                   {error ? (<>
                     <p className='text-center'>Error verifying email. Please try again.</p>
                   </>) : (<>
-                    <p className='text-center mb-8' >Success! Your email has been verified. <br/> You&apos;re free to sign in now!</p>
-                    <Link className="font-bold text-xs hover:text-[#FFC701] ease-in-out duration-300" href="/forgot-password">GO TO SIGN IN</Link>
+                    <p className='text-center mb-8 min-w-80'>{alreadyVerified ? "Email is already verified!" : `Succes! Email was verified, you're free to sign in now!`}</p>
+                    <Link className="font-bold text-xs hover:text-[#FFC701] ease-in-out duration-300" href="/signin">GO TO SIGN IN</Link>
                   </>)}
                 </div>
                 </div>

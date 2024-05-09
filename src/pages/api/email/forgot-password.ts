@@ -2,7 +2,6 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import nodemailer from 'nodemailer';
 
 interface RequestBody {
-        key: string;
         recipient: string;
 }
 
@@ -11,8 +10,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ error: 'Method Not Allowed' });
   }
   
-  const { key, recipient } = req.body as RequestBody;
-  if(key !== process.env.EXTERNAL_API_KEY) {res.status(401).json({ error: 'Unauthorized' }); }
+  const { recipient } = req.body as RequestBody;
   const email = recipient;
   
   try {
@@ -24,7 +22,7 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
         pass: process.env.EMAIL_PASSWORD,
       },
     });
-    
+  
     const mailOptions = {
       from: "martanek500game@gmail.com",
       to: "martincerny@volny.cz",

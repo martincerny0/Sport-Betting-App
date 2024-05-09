@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
 
 interface RequestBody {
-    key: string;
     captchaToken: string;
 }
 
@@ -10,13 +9,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         return res.status(405).json({ error: 'Method Not Allowed' });
     }
     
-    const { key, captchaToken } = req.body as RequestBody;
-    
-    if (key !== process.env.NEXT_PUBLIC_EXTERNAL_API_KEY) {
-        return res.status(401).json({ error: 'Unauthorized' });
-    }
+    const { captchaToken } = req.body as RequestBody;
 
     try {
+        
         const response = await fetch(`https://recaptchaenterprise.googleapis.com/v1/projects/betton-421818/assessments?key=${process.env.GOOGLE_RECAPTCHA_SECRET}`, {
             method: 'POST',
             headers: {

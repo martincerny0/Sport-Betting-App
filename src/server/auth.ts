@@ -1,16 +1,13 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { type GetServerSidePropsContext } from "next";
 import bcrypt from "bcrypt"
-
 import {
   getServerSession,
   type DefaultSession,
   type NextAuthOptions,
 } from "next-auth";
 import { type Adapter } from "next-auth/adapters";
-import DiscordProvider from "next-auth/providers/discord";
 import CredentialsProvider from "next-auth/providers/credentials";
-import { env } from "~/env";
 import { db } from "~/server/db";
 
 /**
@@ -25,7 +22,6 @@ declare module "next-auth" {
       id: string;
       name: string;
       email: string;
-      balance: number;
       // ...other properties
       // role: UserRole;
     };
@@ -50,10 +46,9 @@ const AUTH_PAGES = {
 }
 export const authOptions: NextAuthOptions = {
   callbacks: {
-     session: async ({session, token, user}) => {
+     session: async ({session, token}) => {
       if (session?.user) {
-        // Access the user ID from the token (assuming it's stored there)
-        session.user.id = token.sub?? ""; // Adjust property name based on your adapter
+        session.user.id = token.sub?? ""; 
       }
       return session;
     },

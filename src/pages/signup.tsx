@@ -1,15 +1,23 @@
 import { NextPage } from "next";
 import Link from "next/link";
 import { useState } from "react";
+import { useEffect } from "react";
 import { api } from "~/utils/api";
 import Head from "next/head";
-import { ZodError, set, z } from "zod";
+import { ZodError, z } from "zod";
 import { useRef } from "react";
 import { toast } from "sonner";
 import { TRPCClientError } from "@trpc/client";
-import { send } from "process";
+import { InferGetServerSidePropsType } from "next";
+import { GetServerSidePropsContext } from "next";
+import config from "../../config";
 
-const SignUp: NextPage = () => {
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+    const inviteCode = context.query.invite as string ?? "";
+    return { props: { inviteCode } };
+  };
+
+const SignUp: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> = ({ inviteCode }) => {
 
     // inputs
     const [name, setName] = useState("");
@@ -19,6 +27,7 @@ const SignUp: NextPage = () => {
     const [passwordConfirm, setPasswordConfirm] = useState("");
     const [isBackSpaceDown, setIsBackSpaceDown] = useState(true);
     const passwordConfirmRef = useRef<HTMLInputElement>(null);
+    const [VerificationToken, setVerificationToken] = useState("");
 
     // errors
     const [nameError, setNameError] = useState("");
@@ -47,19 +56,72 @@ const SignUp: NextPage = () => {
         passwordConfirm: z.string()
     });
 
-    const sendEmail = async () => {
-        const emailResponse = await fetch(`http://localhost:3000/api/email/verify`, {
+    const sendEmail = async (token : string) => {
+        setVerificationToken(token);
+        const emailResponse = await fetch(`${config.baseUrl}/api/email/verify`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({key: process.env.NEXT_PUBLIC_EXTERNAL_API_KEY, recipient: email})
+            body: JSON.stringify({token: token})
         });
-        if(emailResponse.status !== 200){ toast.error("There was some error sending the email. <br> Please try again later."); setEmailResend(true)};
+        if(emailResponse.status !== 200){ toast.error("There was some error sending the email. <br> Please try it again."); setEmailResend(true)};
     }
 
-    const ContinueCheck = () => {
+    const authorizeUser = async () => {
+        const inputs = { email: email, password: password, passwordConfirm: passwordConfirm };
+        if (inputs.password !== inputs.passwordConfirm) {
+            setPasswordConfirmError("Passwords do not match");
+            if(passwordConfirmRef.current)passwordConfirmRef.current.value = "";
+        }
+        try {
+            secondPageSchema.parse(inputs);
+            if(password === passwordConfirm) {
+            try {
+                const response = await mutateAsync({
+                    email: email,
+                    password: password,
+                    name: name,
+                    dateOfBirth: dateOfBirth
+                }).then((response) => sendEmail(response.token));
+                setIsFinalMessage(true);
+            } catch (e) {
+                if(e instanceof TRPCClientError) {
+                    toast.error(e.message ?? "An error occurred, please try again later");
+                }
+            }
 
+            setEmailError("");
+            setPasswordError("");
+            setPasswordConfirmError("");
+        } 
+        } catch (e) {
+            if (e instanceof ZodError) {
+                    e.errors.forEach((error) => {
+                        switch (error.path[0]) {
+                            case 'email':
+                                setEmailError(error.message);
+                                break;
+                            case 'password':
+                                setPasswordError(error.message);
+                                break;
+                            case 'passwordConfirm':
+                                setPasswordConfirmError(error.message);
+                                break;
+                            default:
+                                break;
+                        }
+                    });
+            }
+        }
+        setTimeout(() => {
+            setEmailError("");
+            setPasswordError("");
+            setPasswordConfirmError("");
+        }, 2000);
+    };
+    
+    const ContinueCheck = () => {
         const input = { fullname: name, dateOfBirth: dateOfBirth };
 
             try {
@@ -85,58 +147,6 @@ const SignUp: NextPage = () => {
         }, 2000);
     }
 
-    const authorizeUser = async () => {
-        const inputs = { email: email, password: password, passwordConfirm: passwordConfirm };
-        if (inputs.password !== inputs.passwordConfirm) {
-            setPasswordConfirmError("Passwords do not match");
-            if(passwordConfirmRef.current)passwordConfirmRef.current.value = "";
-        }
-        try {
-            secondPageSchema.parse(inputs);
-            if(password === passwordConfirm) {
-            try {
-                const response = await mutateAsync({
-                    email: email,
-                    password: password,
-                    name: name,
-                    dateOfBirth: dateOfBirth
-                });
-                setIsFinalMessage(true);
-                await sendEmail();
-            } catch (e) {
-                if(e instanceof TRPCClientError) {
-                    toast.error(e.message ?? "An error occurred, please try again later");
-                }
-            }
-
-            setEmailError("");
-            setPasswordError("");
-            setPasswordConfirmError("");
-        }
-        
-        } catch (e) {
-            if (e instanceof ZodError) {
-                e.errors.forEach((error) => {
-                    if (error.path[0] === 'email') {
-                      setEmailError(error.message);
-                    }
-                    if (error.path[0] === 'password') {
-                      setPasswordError(error.message);
-                    }
-                    if (error.path[0] === 'passwordConfirm') {
-                      setPasswordConfirmError(error.message);
-                    }
-                });
-            }
-        }
-        setTimeout(() => {
-            setEmailError("");
-            setPasswordError("");
-            setPasswordConfirmError("");
-        }, 2000);
-    };
-
-
     return (
         <>
             <Head>
@@ -147,7 +157,7 @@ const SignUp: NextPage = () => {
                     <div className="flex h-min min-h-min justify-center items-center flex-row px-5 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl ">
                         <div className="flex h-min min-h-min justify-center items-start flex-col">
                             <p className="font-extrabold text-xl my-1">betton</p>
-                            <div className="w-52 text-xl flex min-h-min justify-center items-center flex-col p-2 z-10 mb-8 py-[85px] bg-cover bg-center h-64 rounded-xl " style={{backgroundImage: `url(./images/loginbg.webp)`}}>
+                            <div className="w-52 text-xl flex min-h-min justify-center items-center flex-col p-2 z-10 mb-8 py-[85px] bg-cover bg-center h-64 rounded-xl" style={{backgroundImage: `url(./images/loginbg.webp)`}}>
                                 <div className="flex h-64 min-h-64 justify-center items-center  w-52 rounded-xl bg-gradient-to-b font-bold  from-[#FFD355] via-[#D33469] to-[#40348A] opacity-90">
                                 <p className="leading-tight text-[#FAECDE] animate-[fadeIn_0.3s_ease-in-out]">ALL IN!</p>
                                 </div>
@@ -184,7 +194,7 @@ const SignUp: NextPage = () => {
                                 {isFinalMessage ? (
                                     <>
                                     <p className="text-center">Thank you for registering! <br/> We&apos;ve sent a verification email to the address you provided. <br/> Please click on the verification link in the email <br/> to activate your account. <br/><br/> If you cant&apos;t find the email, check your spam or junk folder.</p>
-                                    {emailResend ? <button className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black" onClick={ () => {setEmailResend(false); sendEmail}}>RESEND EMAIL</button> :                                     <Link className="font-bold text-xs mt-8 hover:text-[#FFC701] ease-in-out duration-300" href="/signin">GO TO SIGN IN</Link>}
+                                    {emailResend ? <button className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black" onClick={async () => {setEmailResend(false); await sendEmail(VerificationToken)}}>RESEND EMAIL</button> : <Link className="font-bold text-xs mt-8 hover:text-[#FFC701] ease-in-out duration-300" href="/signin">GO TO SIGN IN</Link>}
                                     </>) : (
                                     <>
                                     <span></span>

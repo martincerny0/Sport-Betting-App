@@ -9,7 +9,7 @@ import LatestBets from "~/common/modules/components/Bets/LatestBets";
 import AllGames from "~/common/modules/components/Games/AllGames";
 import MyBets from "~/common/modules/components/Bets/UserBets";
 import { useState } from "react";
-import MainWindow from "~/common/modules/components/MainWindow/MainWindow";
+import MainWindow from "~/common/modules/components/Main/MainWindow/MainWindow";
 import { toast } from "sonner";
 
 export default function Home() {
@@ -34,16 +34,6 @@ export default function Home() {
   const userId = data?.user?.id ?? "-";
 
   const userEmail = "martincerny@volny.cz";
-  const isEmailVerifiedQuery = api.user.isEmailVerified.useQuery({email: userEmail});
-
-  console.log(isEmailVerifiedQuery.data);
-  if(isEmailVerifiedQuery.data?.emailVerified === null) {
-    console.log("Email not verified");
-    return;
-  }
-  console.log("Email verified");
- 
-
  
   return (
     <>
@@ -53,6 +43,7 @@ export default function Home() {
 
     <Layout>
        <MainWindow></MainWindow>
+       
        <button onClick={() => toast.info("kokote")}>Games</button>
     </Layout>
     </>

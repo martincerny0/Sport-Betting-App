@@ -1,13 +1,13 @@
 import { NextPage } from "next";
 import Link from "next/link";
-import { signIn, useSession } from "next-auth/react";
 import { useState } from "react";
-import Router from "next/router";
 import Head from "next/head";
 import { useRef } from "react";
 import ReCAPTCHA from 'react-google-recaptcha'
 import { toast } from "sonner";
 import z from "zod";
+import config from "../../config";
+import Router from "next/router";
 
 
 const ForgotPassword : NextPage = () => {
@@ -29,7 +29,6 @@ const ForgotPassword : NextPage = () => {
             setIsContinue(true);
         } catch (e) {
             if(e instanceof z.ZodError){
-                console.log(e.errors[0]?.message);
                 setEmailError(e.errors[0]?.message?? "");
                 if(emailRef.current) emailRef.current.value = "";
             }
@@ -40,24 +39,24 @@ const ForgotPassword : NextPage = () => {
     }
 
     const captchaVerify = async (captchaToken : string | null) => {
-       const captchaResponse = await fetch("http://localhost:3000/api/captcha/verify", {
+       const captchaResponse = await fetch(`${config.baseUrl}/api/captcha/verify`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({key: process.env.NEXT_PUBLIC_EXTERNAL_API_KEY, captchaToken})
+            body: JSON.stringify({captchaToken})
         });
         captchaResponse.status === 200 ? setIsCaptchaVerified(true) : setIsCaptchaVerified(false);
         
     }
 
     const sendEmail = async () => {
-        const emailResponse = await fetch(`http://localhost:3000/api/email/forgot-password`, {
+        const emailResponse = await fetch(`${config.baseUrl}/api/email/forgot-password`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({key: process.env.NEXT_PUBLIC_EXTERNAL_API_KEY, recipient: email})
+            body: JSON.stringify({recipient: email})
         });
         emailResponse.status === 200 ? setIsFinalMessage(true) : toast.error("There was some error sending the email. <br> Please try again later.");
     }
