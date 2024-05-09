@@ -32,16 +32,16 @@ return (<>
         <p>{game.team1Name} Win {game.oddsTeam1Win}</p>
         <p>{game.team2Name} Win {game.oddsTeam2Win}</p>
         <p> {game.oddsOver} over</p>
-        <p>{game.breakPoint}</p>
+        <p>{game.breakPoint} points</p>
         <p> {game.oddsUnder} under</p>
         <button className='bg-orange-400' onClick={() => bet(game.id)}>BET</button>
     </div>
 ))}
 {userBets.data?.map((bet) => (
     <div className='border border-black h-54 w-32 text-center' key={bet.id}>
-        <p>{bet.gameId}</p>
-        <p>{bet.amount}</p>
-        {bet.prediction === "Team1" ? <p>{bet.game.team1Name}</p> : <p>{bet.game.team2Name}</p>} <p>{bet.type}</p>
+        <p>${bet.amount}</p>
+        <p className='text-green-400'>${bet.potentialWin}</p>
+        {bet.prediction === "Team1" ? <p>{bet.game.team1Name}</p> : <p>{bet.game.team2Name}</p>}
         <p>{bet.odds}</p>
     </div>
 ))}
