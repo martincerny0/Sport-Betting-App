@@ -10,7 +10,7 @@ const Nav : React.FC = () => {
 
 
     return (
-        <div className="flex h-min w-11/12 min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
+        <div className="mt-4 flex h-min w-11/12 min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
             <div className="flex h-min w-full min-h-min items-start justify-between flex-row px-3 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
             <p className="font-extrabold text-xl my-1">betton</p>
             <div className="flex h-full min-h-full justify-center items-center">

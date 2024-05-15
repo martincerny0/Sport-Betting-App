@@ -41,7 +41,7 @@ export default function Home() {
       <Head>
         <title>Home | Betton</title>
       </Head>
-      <div className="flex h-full min-h-full gap-4 justify-center items-center flex-col bg-gradient-to-b from-[#0D263D] to-[#141414]">
+      <div className="flex gap-4 justify-center items-center flex-col bg-gradient-to-b from-[#0D263D] to-[#141414]">
         <Nav></Nav>
         <div className="justify-center items-start gap-4 main-grid">
         <div className="row-span-2 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
@@ -82,8 +82,8 @@ export default function Home() {
           </div>
         </div>
       </div>
-       
-    </>
-  );
+      </>
+ 
+    );
 }
 

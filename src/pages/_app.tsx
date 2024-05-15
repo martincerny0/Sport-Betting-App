@@ -21,7 +21,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 }) => {
   return (
     <SessionProvider session={session}>
-      <main className={`font-sansation`}>
+      <main className={`font-sansation from-[#0D263D] to-[#141414]`}>
       <Toaster position="top-left" richColors/>
       <Head>
           <link rel="icon" href="/icon.png" />
