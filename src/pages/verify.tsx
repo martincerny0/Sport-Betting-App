@@ -38,7 +38,7 @@ const Verify: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> =
     <title>Verify Email | Betton</title>
     </Head>
     <div className="flex h-full min-h-full justify-center items-center flex-col bg-gradient-to-b from-[#0D263D] to-[#141414]">
-      {isLoading && <LoadingOverlay isPending={isLoading}/>}
+      {isLoading && <LoadingOverlay isFullScreen={true} isPending={isLoading}/>}
         <div className="flex h-min min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
             <div className="flex h-min min-h-min justify-center items-center flex-row px-5 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
             <div className="flex h-min min-h-min justify-center items-start flex-col bg-no-repeat bg-contain bg-center " style={{backgroundImage: `url(https://files.oaiusercontent.com/file-nuNg8AWXL4DnLoWCfgvT0r8p?se=2024-04-24T21%3A13%3A27Z&sp=r&sv=2021-08-06&sr=b&rscc=max-age%3D31536000%2C%20immutable&rscd=attachment%3B%20filename%3Dd7f97d29-aef6-4947-995a-e153f267aac9.webp&sig=zANYeHLvJ8pD%2BsNQWqOHov4IilBbpdfTuRG2d8Nvjbo%3D)`}}>

@@ -11,7 +11,7 @@ import { TRPCClientError } from "@trpc/client";
 import { InferGetServerSidePropsType } from "next";
 import { GetServerSidePropsContext } from "next";
 import config from "../../config";
-import { DateTime } from "next-auth/providers/kakao";
+import SmallLoading from "~/common/modules/components/SmallLoading/SmallLoading";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
     const inviteCode = context.query.invite as string ?? "";
@@ -39,9 +39,10 @@ const SignUp: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> =
 
 
     // utils
+    const [inputTypePassword, setInputType] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [isContinue, setIsContinue] = useState(false);
     const [isFinalMessage, setIsFinalMessage] = useState(false);
-    const [inputTypePassword, setInputType] = useState(true);
     const [emailResend, setEmailResend] = useState(false);
     const { mutateAsync, error } = api.user.register.useMutation();
 
@@ -79,6 +80,7 @@ const SignUp: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> =
             secondPageSchema.parse(inputs);
             if(password === passwordConfirm) {
             try {
+                setIsLoading(true);
                 const response = await mutateAsync({
                     email: email,
                     password: password,
@@ -91,7 +93,9 @@ const SignUp: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> =
                     toast.error(e.message ?? "An error occurred, please try again later");
                 }
             }
-
+            finally {
+            setIsLoading(false);
+            }
             setEmailError("");
             setPasswordError("");
             setPasswordConfirmError("");
@@ -154,6 +158,7 @@ const SignUp: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> =
         // time difference
         const timeDiff = Math.abs(date - today);
         const age = Math.floor(timeDiff / (1000 * 3600 * 24))/ 365.25;
+        
         return age >= 18 ? true : false;
     }
 
@@ -234,7 +239,7 @@ const SignUp: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> =
                                                 <input className={`text-[#FAECDE] bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-lg h-6 w-48 px-2 focus:outline-[#666666] ease-in-out duration-300 text-sm indent-0.5 font-light hover:ring-[#666666] hover:ring-2 ${passwordConfirmError && "placeholder:text-red-500 animate-[fadeIn_0.3s_ease-in-out]"}`} placeholder={passwordConfirmError ? passwordConfirmError : ""} type={inputTypePassword ? "password" : "text"} ref={passwordConfirmRef} onBlur={(e) => setPasswordConfirm(e.target.value)}></input>
                                             </div>
                                         </div>
-                                        <button className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black" onClick={async () => await authorizeUser()}>SIGN UP</button>
+                                        <button className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black flex" onClick={async () => await authorizeUser()}>SIGN UP<SmallLoading isPending={isLoading}></SmallLoading></button>
                                         <p className="hover:cursor-pointer font-bold text-xs mt-2 hover:text-[#FFC701] ease-in-out duration-300" onClick={() => setIsContinue(false)}>GO BACK</p>
                                     </>)}
                                 </>)}
