@@ -4,12 +4,14 @@ import { signIn } from "next-auth/react";
 import { useState } from "react";
 import Router from "next/router";
 import Head from "next/head";
+import SmallLoading from "~/common/modules/components/SmallLoading/SmallLoading";
 
 const SignIn : NextPage = () => {
 
     const [email, setEmail] = useState("mar@kar.cz");
     const [password, setPassword] = useState("Magdalenka");
     const [passwordError, setPasswordError] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
 
 
     const [inputTypePassword, setInputType] = useState(true);
@@ -17,6 +19,7 @@ const SignIn : NextPage = () => {
     const authentication = async () => {
         
 
+        setIsLoading(true);
         const result = await signIn('credentials', {
             email: email,
             password: password,
@@ -25,6 +28,7 @@ const SignIn : NextPage = () => {
         if (result?.ok) {
             return Router.push("/");
         }
+        setIsLoading(false);
         setPasswordError(result?.error ?? "Invalid credentials");
         setPassword("");
         setInputType(true);
@@ -68,7 +72,7 @@ const SignIn : NextPage = () => {
                     <div style={passwordError ? {display:"none"} : {display: "block"}} className="bg-gradient-to-b from-[#FFC701] to-[#FF9900] absolute right-0 rounded-lg px-1 p-0.5 hover:rounded-xl ease-in-out duration-300"><button className={`f7-icons ico-size-20 ease-in-out duration-300 ${!inputTypePassword && "text-black animate-[fadeIn_0.3s_ease-in-out]"}`} onClick={() => setInputType(!inputTypePassword)}>{inputTypePassword ? "eye_slash" : "eye"}</button></div>
                     </div>
                     </div>
-                    <button className=" bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black " onClick={async () => { await authentication() }}>SIGN IN</button>
+                    <button className=" bg-gradient-to-b from-[#FFC701] to-[#FF9900] mt-4 p-1 px-4 font-bold text-sm rounded-lg hover:rounded-xl ease-in-out duration-300 hover:text-black flex" onClick={async () => { await authentication() }}>SIGN IN <SmallLoading isPending={isLoading}></SmallLoading></button>
                     <Link className="font-bold text-xs mt-2 hover:text-[#FFC701] ease-in-out duration-300" href="/signup">SIGN UP</Link>
                     <Link className="font-bold text-xs hover:text-[#FFC701] ease-in-out duration-300 mt-8" href="/forgot-password">FORGOT PASSWORD?</Link>
                     </div>
