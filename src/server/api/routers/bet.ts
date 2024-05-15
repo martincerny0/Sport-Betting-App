@@ -3,12 +3,8 @@ import {
     protectedProcedure,
     publicProcedure,
   } from "~/server/api/trpc";
+import { z } from "zod";
 
-import { number, promise, set, z } from "zod";
-import { api } from "~/utils/api";
-import { Prisma } from "@prisma/client";
-
-import { PrismaClient } from '@prisma/client';
 
 
 
@@ -16,7 +12,25 @@ export const BetRouter = createTRPCRouter({
     getHottestBet: publicProcedure
     .query(({ ctx }) => {
         return ctx.db.bet.findFirst({
+            where: { result: "pending" },
             orderBy: { odds: "desc" },
+        });
+    }),
+    trendingBets: publicProcedure
+    .query(({ ctx }) => {
+        return ctx.db.bet.findMany({
+            where: { result: "pending" },
+            orderBy: { createdAt: "desc" },
+            skip: 1,
+            take: 3,
+        });
+    }),
+    liveBets: publicProcedure 
+    .query(({ ctx }) => {
+        return ctx.db.bet.findMany({
+            where: { result: "pending" },
+            orderBy: { createdAt: "desc" },
+            take: 3,
         });
     }),
     getLatestBets: publicProcedure
@@ -82,8 +96,8 @@ export const BetRouter = createTRPCRouter({
     updateBets: publicProcedure
     .input(z.object({
         gameId: z.string(),
-        gameWinner: z.string(),
-        gameScore: z.number(),
+        team1Score: z.number(),
+        team2Score: z.number(),
         bets: z.array(z.object({
             id: z.string(),
             type:z.string(),
@@ -93,36 +107,49 @@ export const BetRouter = createTRPCRouter({
         ),    
     }))
     .mutation(async ({ input, ctx }) => {
+        const gameWinner = input.team1Score > input.team2Score ? "Team1" : "Team2";
+        const totalScore = input.team1Score + input.team2Score;
         let result = "lost";
+
         await Promise.all(input.bets.map(async (bet) => {
             switch(bet.type){
                 case "win":
-                    if(input.gameWinner === bet.prediction){
+                    if(gameWinner === bet.prediction){
                         result = "won";
                     }
                     break;
                 case "lose":
-                    if(input.gameWinner !== bet.prediction){
+                    if(gameWinner !== bet.prediction){
                         result = "won";
                     }
                     break;
                 case "over":
-                    if(input.gameScore > parseInt(bet.prediction)){
+                    if(totalScore > parseInt(bet.prediction)){
                         result = "won";
                     }
                     break;
                 case "under":
-                    if(input.gameScore < parseInt(bet.prediction)){
+                    if(totalScore < parseInt(bet.prediction)){
                         result = "won";
                     }
                     break;
             }
-            return await ctx.db.bet.update({
+            const betInfo = await ctx.db.bet.update({
                 where: { id: bet.id },
                 data: {
                     result: result,  
                 },
             });
+            if(result = "won"){
+                await ctx.db.user.update({
+                    where: { id: bet.userId },
+                    data: {
+                        balance: {
+                            increment: betInfo.potentialWin,
+                        },
+                    },
+                })
+            }
         }));
     }),
     boostBet: protectedProcedure
@@ -138,7 +165,9 @@ export const BetRouter = createTRPCRouter({
         return await ctx.db.bet.update({
             where: { id: input.betId },
             data: {
-                amount: bet.amount + input.amount,
+                amount: bet.amount * 2,
+                potentialWin: bet.potentialWin * 2,
+                boosted: true,
             },
         });
     }),

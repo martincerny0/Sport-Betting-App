@@ -61,8 +61,8 @@ const Verify: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> =
                     <p className='text-center'>Error verifying email. Please try again.</p>
                   </>) : (<>
                     <p className='text-center mb-8 min-w-80'>{alreadyVerified ? "Email is already verified!" : `Succes! Email was verified, you're free to sign in now!`}</p>
-                    <Link className="font-bold text-xs hover:text-[#FFC701] ease-in-out duration-300" href="/signin">GO TO SIGN IN</Link>
                   </>)}
+                  <Link className="font-bold text-xs hover:text-[#FFC701] ease-in-out duration-300" href="/signin">GO TO SIGN IN</Link>
                 </div>
                 </div>
             </div>

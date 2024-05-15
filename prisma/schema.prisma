@@ -113,6 +113,6 @@ model Bet {
   amount       Float    // Amount of money bet
   potentialWin Float    // Amount of money that can be won
   odds         Float    
-  boosted      Int      @default(0)
+  boosted      Boolean  @default(false)
   createdAt    DateTime @default(now())
 }
