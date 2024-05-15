@@ -48,7 +48,12 @@ body{
   .ico-size-56 {
     font-size: 56px;
   }
-
+.main-grid{
+    display: grid;
+    grid-template-columns: repeat(6,14vw);
+    grid-template-rows: repeat(7,7vw);
+    grid-auto-flow: row;
+}
 @font-face {
     font-family: 'Sansation Regular';
     font-style: normal;

@@ -11,6 +11,7 @@ import MyBets from "~/common/modules/components/Bets/UserBets";
 import { useState } from "react";
 import MainWindow from "~/common/modules/components/Main/MainWindow/MainWindow";
 import { toast } from "sonner";
+import Nav from "~/common/modules/components/Nav/Nav";
 
 export default function Home() {
 
@@ -40,12 +41,48 @@ export default function Home() {
       <Head>
         <title>Home | Betton</title>
       </Head>
-
-    <Layout>
-       <MainWindow></MainWindow>
+      <div className="flex h-full min-h-full gap-4 justify-center items-center flex-col bg-gradient-to-b from-[#0D263D] to-[#141414]">
+        <Nav></Nav>
+        <div className="justify-center items-start gap-4 main-grid">
+        <div className="row-span-2 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
+            <div className="w-full h-full items-start justify-between flex-row px-3 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
+            </div>
+          </div>
+          <div className="col-span-4 row-span-3 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
+            <div className="h-full items-start justify-between flex-row px-3 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
+            </div>
+          </div>
+          <div className="h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
+            <div className="h-full items-start justify-between flex-row px-3 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
+            </div>
+          </div>
+          <div className="row-span-2 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
+            <div className="h-full items-start justify-between flex-row px-3 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
+            </div>
+          </div>
+          <div className="row-span-5 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
+            <div className="h-full items-start justify-between flex-row px-3 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
+            </div>
+          </div>
+          <div className="row-span-2 h-full col-span-4  justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
+            <div className="h-full items-start justify-between flex-row px-3 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
+            </div>
+          </div>
+          <div className="row-span-4 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
+            <div className="h-full items-start justify-between flex-row px-3 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
+            </div>
+          </div>
+          <div className="row-span-2 col-span-2 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
+            <div className="h-full items-start justify-between flex-row px-3 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
+            </div>
+          </div>
+          <div className="row-span-2 col-span-2 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
+            <div className="h-full items-start justify-between flex-row px-3 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
+            </div>
+          </div>
+        </div>
+      </div>
        
-       <button onClick={() => toast.info("kokote")}>Games</button>
-    </Layout>
     </>
   );
 }
