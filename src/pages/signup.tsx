@@ -1,6 +1,6 @@
 import { NextPage } from "next";
 import Link from "next/link";
-import { useState } from "react";
+import { use, useState } from "react";
 import { useEffect } from "react";
 import { api } from "~/utils/api";
 import Head from "next/head";
@@ -11,6 +11,7 @@ import { TRPCClientError } from "@trpc/client";
 import { InferGetServerSidePropsType } from "next";
 import { GetServerSidePropsContext } from "next";
 import config from "../../config";
+import { DateTime } from "next-auth/providers/kakao";
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
     const inviteCode = context.query.invite as string ?? "";
@@ -63,7 +64,7 @@ const SignUp: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> =
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({token: token})
+            body: JSON.stringify({token: token, inviteCode: inviteCode, email: email})
         });
         if(emailResponse.status !== 200){ toast.error("There was some error sending the email. <br> Please try it again."); setEmailResend(true)};
     }
@@ -126,7 +127,8 @@ const SignUp: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> =
 
             try {
                 firstPageSchema.parse(input);
-                if (!/^\d{2}\/\d{2}\/\d{4}$/.test(input.dateOfBirth)){setDateOfBirthError("Invalid format"); return;}
+                if (!/^\d{2}\/\d{2}\/\d{4}$/.test(input.dateOfBirth) ){setDateOfBirthError("Invalid format");  return;}
+                if (!isAdult(dateOfBirth)){setDateOfBirthError("Must be 18+ to proceed"); return}
                 setIsContinue(true);
             } catch (e) {
                 if (e instanceof ZodError) {
@@ -141,12 +143,31 @@ const SignUp: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> =
                 }
             }
 
+    }
+
+    const isAdult = (dateOfBirth: string) => {
+        // create date from user input
+        const date = new Date(parseInt(dateOfBirth.substring(6,10)), parseInt(dateOfBirth.substring(3,5))-1, parseInt(dateOfBirth.substring(0,2)));
+        const today = new Date();
+        // is valid date?
+        if(date.getFullYear() > today.getFullYear()) return false;
+        // time difference
+        const timeDiff = Math.abs(date - today);
+        const age = Math.floor(timeDiff / (1000 * 3600 * 24))/ 365.25;
+        return age >= 18 ? true : false;
+    }
+
+    useEffect(() => {
+
+        // reset errors
         setTimeout(() => {
             setDateOfBirthError("");
             setNameError("");
+            setEmailError("");
+            setPasswordError("");
+            setPasswordConfirmError("");
         }, 2000);
-    }
-
+    }, [nameError, dateOfBirthError, emailError, passwordError, passwordConfirmError]);
     return (
         <>
             <Head>

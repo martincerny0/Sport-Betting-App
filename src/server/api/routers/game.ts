@@ -7,6 +7,13 @@ import {
   import { z } from "zod";
 
 export const GameRouter = createTRPCRouter({
+    getAllSports: publicProcedure
+    .query(({ ctx }) => {
+        return ctx.db.sport.findMany({
+            orderBy: { name: "asc" },
+        });
+        }
+    ),
     getAllGames: publicProcedure
     .query(({ ctx }) => {
         return ctx.db.game.findMany();
