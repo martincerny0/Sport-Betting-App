@@ -52,8 +52,8 @@ body{
   }
 .main-grid{
     display: grid;
-    grid-template-columns: repeat(6,14.4vw);
-    grid-template-rows: repeat(7,6.5vw);
+    grid-template-columns: repeat(6,11rem);
+    grid-template-rows: repeat(7,6.5rem);
     grid-auto-flow: row;
 }
 @font-face {
