@@ -15,26 +15,6 @@ import Nav from "~/common/modules/components/Nav/Nav";
 
 export default function Home() {
 
-  const [gameId, setGameId] = useState("clva02gmo000a107nrdpjy1n1");
-
-  const { data } = useSession();
-
-  const gameById = api.game.getGameById.useQuery(gameId);
-  const updateMutation = api.game.updateGame.useMutation();
-  const updateBetMutation = api.bet.updateBets.useMutation();
-  const betMutation =  api.bet.createBet.useMutation();
-  const gameMutation = api.game.createGame.useMutation();
-  const betsOnGame = api.bet.getBetsByGameId.useQuery({gameId});
-
-  const allGamesQuery = api.game.getAllGames.useQuery();
-  console.log(betsOnGame.data);
- 
-  const [showMyBets, setShowMyBets] = useState(true);
-
-
-  const userId = data?.user?.id ?? "-";
-
-  const userEmail = "martincerny@volny.cz";
  
   return (
     <>

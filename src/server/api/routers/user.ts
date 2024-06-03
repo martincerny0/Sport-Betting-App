@@ -14,11 +14,14 @@ export const userRouter = createTRPCRouter({
         }))
     .mutation(async ({ input, ctx }) => {
 
+        // hash user password
         const hashed = await bcrypt.hash(input.password, await bcrypt.genSalt(10));
 
+        // parse date of birth
         const [day, month, year] = input.dateOfBirth.split('/').map(Number);
         const dateOfBirth = new Date(year?? 0, (month?? 0) - 1, (day?? 0) + 1);
 
+        // check if email is already used
         const response = await ctx.db.user.findUnique({
             where: {
                 email: input.email,
@@ -30,6 +33,7 @@ export const userRouter = createTRPCRouter({
                     message: 'EMAIL ALREADY USED',
                 });
         }
+        // create new user
         const user = await ctx.db.user.create({
             data: {
                 email: input.email,
@@ -39,6 +43,7 @@ export const userRouter = createTRPCRouter({
                 inviteCode: crypto.randomBytes(16).toString('hex'),
             }
         });
+        // create new user verification token
         const token = await ctx.db.verificationToken.create({
             data: {
                 userId: user.id,
@@ -47,7 +52,8 @@ export const userRouter = createTRPCRouter({
         });
         return token;
     }),
-    depositBalance: publicProcedure
+    // deposit balance to account ( demo only, doesn't const actual money )
+    depositBalance: protectedProcedure
     .input(z.object({
             userId: z.string().min(1),
             amount: z.number().min(1),
@@ -56,6 +62,7 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
 
+        // check if depositCode is used and get it's percentage
         const depositCode = await ctx.db.depositCode.findUnique({
             where: {
                 code: input.depositCode,
@@ -64,8 +71,9 @@ export const userRouter = createTRPCRouter({
 
         if(!depositCode) return;
 
-        const finalAmount = input.amount + (input.amount * (depositCode.percentage) / 100);
+        const finalAmount = depositCode ? (input.amount + (input.amount * depositCode.percentage / 100)) : input.amount;
 
+        // update user balance in db
         return await ctx.db.user.update({
             where: {
                 id: input.userId,
@@ -78,7 +86,8 @@ export const userRouter = createTRPCRouter({
         });
     }
     ),
-    withdrawBalance: publicProcedure
+    // withdraw balance from account ( demo only, not applicated )
+    withdrawBalance: protectedProcedure
     .input(z.object({
             userId: z.string().min(1),
             amount: z.number().min(1),
@@ -86,6 +95,7 @@ export const userRouter = createTRPCRouter({
     )
     .mutation(async ({ input, ctx }) => {
 
+        // get actual user balance
         const actualBalance = await ctx.db.user.findUnique({
             where: {
                 id: input.userId,
@@ -94,15 +104,23 @@ export const userRouter = createTRPCRouter({
                 balance: true,
             },
         });
+        // check if user is able to withdraw chosen amount 
         switch (true) {
             case input.amount > (actualBalance?.balance?? 0):
-                return { error: "Insufficient funds" };
+                throw new TRPCError({
+                    code: 'FORBIDDEN',
+                    message: 'INSUFFICIENT FUNDS',
+                });
             case input.amount < 200:
-                return { error: "Minimum withdrawal is 200$" };
+                throw new TRPCError({
+                    code: 'FORBIDDEN',
+                    message: 'MINIMUM WITHDRAWAL IS 200$',
+                });
             default:
                 break;
         }
         
+        // update user balance in db
         return await ctx.db.user.update({
             where: {
                 id: input.userId,
@@ -115,6 +133,7 @@ export const userRouter = createTRPCRouter({
         });
     },
     ),
+    // check if email is verified
     isEmailVerified: publicProcedure
     .input(z.object({
         token: z.string().min(1),
@@ -129,6 +148,7 @@ export const userRouter = createTRPCRouter({
             },
          
         });
+        // if email isn't registered, return ERROR
         if(!response) throw new TRPCError({
             code: 'NOT_FOUND',
             message: 'USER NOT FOUND',
@@ -138,6 +158,7 @@ export const userRouter = createTRPCRouter({
         return { emailVerified: true}
     }
     ),
+    // verify email adress
     verifyEmail: publicProcedure
     .input(z.object({
         userId: z.string().min(1),
@@ -153,6 +174,7 @@ export const userRouter = createTRPCRouter({
         });
     }
     ),
+    // when new user use Invite give Deposit code to the creator of the invite
     useInviteCode: publicProcedure
     .input(z.object({
         inviteCode: z.string().min(1),
@@ -160,6 +182,7 @@ export const userRouter = createTRPCRouter({
     .mutation(async ({ input, ctx }) => {
         const expireIn = 48; // in hours
         
+        // validate invite
         const user = await ctx.db.user.findUnique({
             where: {
                 inviteCode: input.inviteCode,
@@ -168,7 +191,8 @@ export const userRouter = createTRPCRouter({
 
         if(!user) return; 
 
-        
+
+        // give deposit code
         return await ctx.db.depositCode.create({
             data: {
                 userId: user.id,

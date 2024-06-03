@@ -9,6 +9,7 @@ import { z } from "zod";
 
 
 export const BetRouter = createTRPCRouter({
+    // get the hottest bet with the highest odds
     getHottestBet: publicProcedure
     .query(({ ctx }) => {
         return ctx.db.bet.findFirst({
@@ -16,6 +17,7 @@ export const BetRouter = createTRPCRouter({
             orderBy: { odds: "desc" },
         });
     }),
+    // get 3 best bets with the highest odds, excluding the hottest bet
     trendingBets: publicProcedure
     .query(({ ctx }) => {
         return ctx.db.bet.findMany({
@@ -25,6 +27,7 @@ export const BetRouter = createTRPCRouter({
             take: 3,
         });
     }),
+    // get betts with pending results 
     liveBets: publicProcedure 
     .query(({ ctx }) => {
         return ctx.db.bet.findMany({
@@ -40,6 +43,7 @@ export const BetRouter = createTRPCRouter({
         });
         }
     ),
+    // get bets by user
     getUserBets: protectedProcedure
     .input(z.object({ userId: z.string() }))
     .query(async ({input, ctx }) => {
@@ -107,10 +111,12 @@ export const BetRouter = createTRPCRouter({
         ),    
     }))
     .mutation(async ({ input, ctx }) => {
+        // determine winner & total score
         const gameWinner = input.team1Score > input.team2Score ? "Team1" : "Team2";
         const totalScore = input.team1Score + input.team2Score;
         let result = "lost";
 
+        // compare bet predictions with game results
         await Promise.all(input.bets.map(async (bet) => {
             switch(bet.type){
                 case "win":
@@ -152,6 +158,8 @@ export const BetRouter = createTRPCRouter({
             }
         }));
     }),
+    // boost bet by 2x, available only once and before game starts 
+
     boostBet: protectedProcedure
     .input(z.object({
         betId: z.string(),
@@ -162,6 +170,13 @@ export const BetRouter = createTRPCRouter({
             where: { id: input.betId },
         });
         if(!bet) return;
+
+        // get game and check if it's still scheduled
+        const game = await ctx.db.game.findUnique({
+            where: { id: bet.gameId },
+        });
+        if(!game || game.status !== "Scheduled") return;
+
         return await ctx.db.bet.update({
             where: { id: input.betId },
             data: {

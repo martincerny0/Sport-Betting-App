@@ -1,5 +1,4 @@
 import loadingAnimationSmall from '../../../../../public/Animation/loadingSmall.json';
-
 import dynamic from "next/dynamic";
 
 const Lottie = dynamic(() => import("lottie-react"), {
@@ -13,7 +12,7 @@ const LoadingOverlay: React.FC<ILopadingOverlayProps> = ({isPending}) => {
   if(!isPending) return null;
     return (
         <div className='h-1 w-7'>
-           <Lottie animationData={loadingAnimationSmall} loop className=""></Lottie>
+           <Lottie animationData={loadingAnimationSmall} loop></Lottie>
         </div>
     )
 }
