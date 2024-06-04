@@ -43,6 +43,8 @@ datasource db {
 model Sport {
   id        String @id @default(cuid())
   name      String @unique
+  unicode  String
+  image     String @default("./images/")
   Games     Game[]
 }
 
@@ -109,7 +111,7 @@ model Bet {
   user         User     @relation(fields: [userId], references: [id])
   gameId       String
   game         Game     @relation(fields: [gameId], references: [id])
-  result       String? // "Won", "Lost", "Pending"
+  result       String // "Won", "Lost", "Pending"
   amount       Float    // Amount of money bet
   potentialWin Float    // Amount of money that can be won
   odds         Float    

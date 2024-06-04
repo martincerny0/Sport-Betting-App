@@ -18,12 +18,9 @@ export const GameRouter = createTRPCRouter({
     .query(({ ctx }) => {
         return ctx.db.game.findMany();
     }),
-    getGamesByFilter: publicProcedure
+    getGamesBySport: publicProcedure
     .input(z.object({
-
-        payload: z.string().min(1),
         sport: z.string().min(1),
-
     }))
     .query(({ ctx, input }) => {
         return ctx.db.game.findMany({
@@ -34,6 +31,7 @@ export const GameRouter = createTRPCRouter({
     }),
     getGameById: publicProcedure
     .input(z.string())
+    
     .query(({ ctx, input }) => {
         return ctx.db.game.findUnique({
             where: { id: input},

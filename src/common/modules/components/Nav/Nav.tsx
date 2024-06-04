@@ -3,19 +3,18 @@ import Link from "next/link";
 import { useEffect } from "react";
 import { useState } from "react";
 
+interface INavProps {
+  isHomePage: boolean;
+}
 
-
-const Nav : React.FC = () => {
+const Nav : React.FC<INavProps> = ({isHomePage}) => {
 
     const { data, status } = useSession();
 
     const [isHome, setHome] = useState(true);
 
     useEffect(() => {
-        console.log(data);
-        console.log(status);
         if(status === "loading"){
-          console.log("loading");
         }
     }, [status]);
     
@@ -24,9 +23,9 @@ const Nav : React.FC = () => {
     return (
         <div className="mt-4 flex h-min w-[93%] min-h-min justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
             <div className="flex h-min w-full min-h-min items-start justify-between flex-row px-3 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
-            <p className="font-extrabold text-xl my-1">betton</p>
+            <Link href={"/"} className="font-extrabold text-xl my-1">betton</Link>
             <div className="flex h-full min-h-full justify-center items-center">
-            <div className="flex h-min w-32 min-h-min items-start flex-row bg-gradient-to-b from-[#0D263D] to-[#3A425A] rounded-lg">
+            <div className={` ${!isHomePage && "hidden"} flex h-min w-32 min-h-min items-start flex-row bg-gradient-to-b from-[#0D263D] to-[#3A425A] rounded-lg`}>
             <button onClick={() => setHome(true)} className={`w-16 p-0.5 px-3 font-bold text-sm rounded-lg ease-in-out duration-300 ${isHome && "bg-gradient-to-b from-[#FFC701] to-[#FF9900]"}`}>HOME</button>
               <button onClick={() => setHome(false)} className={`w-16 p-0.5 px-4 font-bold text-sm rounded-lg ease-in-out duration-300 ${!isHome && " bg-gradient-to-b from-[#FFC701] to-[#FF9900]"}`}>LIVE</button>
             </div>

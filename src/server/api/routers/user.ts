@@ -52,6 +52,21 @@ export const userRouter = createTRPCRouter({
         });
         return token;
     }),
+    getBalance: protectedProcedure
+    .input(z.object({
+        userId: z.string().min(1),
+        }))
+    .query(async ({ input, ctx }) => {
+        return await ctx.db.user.findUnique({
+            where: {
+                id: input.userId,
+            },
+            select: {
+                balance: true,
+            },
+        });
+    }
+    ),
     // deposit balance to account ( demo only, doesn't const actual money )
     depositBalance: protectedProcedure
     .input(z.object({

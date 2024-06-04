@@ -9,22 +9,23 @@ import { z } from "zod";
 
 
 export const BetRouter = createTRPCRouter({
-    // get the hottest bet with the highest odds
+    // get the hottest bet with the highest odds, scheduled and pending result
     getHottestBet: publicProcedure
     .query(({ ctx }) => {
         return ctx.db.bet.findFirst({
-            where: { result: "pending" },
             orderBy: { odds: "desc" },
+            include: { game: true },
+            where: { game: { status: "Scheduled" }, result: "Pending"}
         });
     }),
     // get 3 best bets with the highest odds, excluding the hottest bet
     trendingBets: publicProcedure
     .query(({ ctx }) => {
         return ctx.db.bet.findMany({
-            where: { result: "pending" },
-            orderBy: { createdAt: "desc" },
+            orderBy: { odds: "desc" },
             skip: 1,
-            take: 3,
+            take: 7,
+            include: { game: true },
         });
     }),
     // get betts with pending results 
@@ -40,6 +41,8 @@ export const BetRouter = createTRPCRouter({
     .query(({ ctx }) => {
         return ctx.db.bet.findMany({
             orderBy: { createdAt: "desc" },
+            take: 30,
+            include: { game: true },
         });
         }
     ),
@@ -48,7 +51,7 @@ export const BetRouter = createTRPCRouter({
     .input(z.object({ userId: z.string() }))
     .query(async ({input, ctx }) => {
         return await ctx.db.bet.findMany({
-            where: { userId: input.userId },
+            where: { userId: input.userId, result: "Pending"},
             include: { game: true },
         });
         
@@ -61,10 +64,6 @@ export const BetRouter = createTRPCRouter({
         prediction: z.string(),
         type: z.string(),
         odds: z.number(),
-        // oddsTeam1Win: z.number(),
-        // oddsTeam2Win: z.number(),
-        // oddsOver: z.number(),
-        // oddsUnder: z.number(),
     }))
     .mutation(async ({ input, ctx }) => {
 
@@ -94,6 +93,7 @@ export const BetRouter = createTRPCRouter({
                 potentialWin: input.amount * input.odds,
                 type: input.type,
                 prediction: input.prediction,
+                result: "Pending",
             },
         });
     }),
