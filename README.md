@@ -6,7 +6,7 @@ The project uses PostgreSQL as its database. Additionally, it integrates [Nodema
 ## Try the Sports Betting App 🚀
 
 To try the app, follow these steps:
-1. **Sign Up:** Register an account to get started.
+1. **Sign Up:** Register an account at [http://-/signup](http://-/signup)  to get started.
 2. **Verify Email:** Check your email to verify your account ✅.
 3. **Sign In:** Once verified, log in 🔑.
 4. **Bet:** Now you're set to bet, Dont become addicted! 🚫💸
