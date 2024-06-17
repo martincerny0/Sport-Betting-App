@@ -4,9 +4,7 @@ import Link from "next/link";
 import { api } from "~/utils/api";
 import Router from "next/router";
 
-import Layout from "~/common/modules/components/Layout/layout";
 import LatestBets from "~/common/modules/components/Bets/LatestBets";
-import AllGames from "~/common/modules/components/Games/AllGames";
 import MyBets from "~/common/modules/components/Bets/UserBets";
 import { useState } from "react";
 import MainWindow from "~/common/modules/components/Main/MainWindow/MainWindow";
