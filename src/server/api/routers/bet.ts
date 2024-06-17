@@ -9,6 +9,29 @@ import { z } from "zod";
 
 
 export const BetRouter = createTRPCRouter({
+    getRelatedBets: publicProcedure
+    .input(z.object({ 
+        gameId: z.string().min(1), 
+        originBetId: z.string().min(1),
+    }))
+    .query(({ input, ctx }) => {
+        return ctx.db.bet.findMany({
+            where: { gameId: input.gameId, id: { not: input.originBetId } },
+            include: { game: true },
+        });
+    }),
+    getBetById: publicProcedure
+    .input(z.object({ 
+        id: z.string().min(1),
+        game: z.boolean().optional().default(false),
+        user: z.boolean().optional().default(false),
+    }))
+    .query(({ input, ctx }) => {
+        return ctx.db.bet.findUnique({
+            where: { id: input.id },
+            include: { game: input.game, user: true },
+        });
+    }),
     // get the hottest bet with the highest odds, scheduled and pending result
     getHottestBet: publicProcedure
     .query(({ ctx }) => {
@@ -84,7 +107,7 @@ export const BetRouter = createTRPCRouter({
         //     break;
         // }
 
-        return await ctx.db.bet.create({
+        const bet =  await ctx.db.bet.create({
             data: {
                 gameId: input.gameId,
                 amount: input.amount,
@@ -96,6 +119,19 @@ export const BetRouter = createTRPCRouter({
                 result: "Pending",
             },
         });
+        if(!bet) return;
+
+        // update user balance
+        await ctx.db.user.update({
+            where: { id: input.userId },
+            data: {
+                balance: {
+                    decrement: input.amount,
+                },
+            },
+        });
+
+        return bet;
     }),
     updateBets: publicProcedure
     .input(z.object({
@@ -119,22 +155,22 @@ export const BetRouter = createTRPCRouter({
         // compare bet predictions with game results
         await Promise.all(input.bets.map(async (bet) => {
             switch(bet.type){
-                case "win":
+                case "Win":
                     if(gameWinner === bet.prediction){
                         result = "won";
                     }
                     break;
-                case "lose":
+                case "Lose":
                     if(gameWinner !== bet.prediction){
                         result = "won";
                     }
                     break;
-                case "over":
+                case "Over":
                     if(totalScore > parseInt(bet.prediction)){
                         result = "won";
                     }
                     break;
-                case "under":
+                case "Under":
                     if(totalScore < parseInt(bet.prediction)){
                         result = "won";
                     }

@@ -1,9 +1,18 @@
 import { api } from '~/utils/api';
+import LoadingContainer from "~/common/modules/components/LoadingContainer/LoadingContainer";
+import Router from "next/router";
+
 
 
 const LiveTickets : React.FC = () => {
 
   const { data, isLoading, isError } = api.bet.getLatestBets.useQuery();
+
+  
+  if(isLoading) return <div className="flex h-full items-center justify-center flex-row bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl"><div className="-ml-28"><LoadingContainer isPending={true}></LoadingContainer></div></div>;
+  if(isError) return <div className="flex h-full w-full items-center justify-center flex-row bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl text-sm"><p className='p-3'>There was an Error loading Data. Try Again Later</p></div>;
+  if(!data) return <div className="flex h-full w-full items-center justify-center flex-row bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl"><p>There is no tickets</p></div>;
+
 
     return (
         <div className="h-full items-start justify-between flex-row px-3 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl overflow-auto">
@@ -12,7 +21,7 @@ const LiveTickets : React.FC = () => {
             <tbody>
               {data?.map((Bet, index) => (
                 <>
-               <tr className="border-b border-[#EEBC8A]" key={Bet.id}>
+               <tr className="border-b border-[#EEBC8A] hover:cursor-pointer hover:animate-pulse" key={Bet.id}  onClick={async () => await Router.push(`/ticket/${Bet.id}`)}>
                 {Bet.type === "Over" || Bet.type === "Under" ? (
                   <td  className="text-[#D1B657]">{Bet.type} {Bet.prediction}</td>
                   ) : (

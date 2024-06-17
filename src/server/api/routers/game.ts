@@ -30,11 +30,13 @@ export const GameRouter = createTRPCRouter({
         });
     }),
     getGameById: publicProcedure
-    .input(z.string())
+    .input(z.object({
+        gameId: z.string().min(1),
+    }))
     
     .query(({ ctx, input }) => {
         return ctx.db.game.findUnique({
-            where: { id: input},
+            where: { id: input.gameId},
         });
     }),
     createGame: publicProcedure

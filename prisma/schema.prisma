@@ -40,6 +40,7 @@ datasource db {
 //   expires      DateTime
 //   user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 // }
+
 model Sport {
   id        String @id @default(cuid())
   name      String @unique
@@ -91,7 +92,7 @@ model Game {
   team2Name         String
   team2Score        Int      @default(0)
   currentIngameTime Int?     @default(0)
-  status            String   @default("Scheduled") // "Scheduled", "Ongoing", "Completed"
+  status            String   @default("Scheduled") // "Scheduled", "Ongoing", "Finished"
   startTime         DateTime
   oddsTeam1Win      Float    @default(1.0)
   oddsTeam2Win      Float    @default(1.0)

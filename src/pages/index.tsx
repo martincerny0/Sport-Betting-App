@@ -21,6 +21,7 @@ import UserBets from "~/common/modules/components/Main/UserBets/UserBets";
 import UserDetails from "~/common/modules/components/Main/UserDetails/UserDetails";
 import HottestBet from "~/common/modules/components/Main/HottestBet/HottestBet";
 import Modal from "~/common/modules/components/Modal/Modal";
+import Footer from "~/common/modules/components/Footer/Footer";
 
 export default function Home() {
 
@@ -78,7 +79,7 @@ export default function Home() {
             <MainBet isSetup={isBetSetup} setBet={changeBetSetup} gameId={gameId} userId={userId?? ""}></MainBet>
           </div>
           <div className={` ${userBetsMore && "hidden"} row-span-4 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl`}>
-           <InviteBanner></InviteBanner>
+           <InviteBanner userId={userId?? ""}  ></InviteBanner>
           </div>
           <div className="row-span-2 col-span-2 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
             <TrendingBets></TrendingBets>
@@ -86,9 +87,11 @@ export default function Home() {
           <div className="row-span-2 col-span-2 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
             <LiveTickets></LiveTickets>
           </div>
+          <div className="row-span-3 col-span-6 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
+          <Footer></Footer>
+          </div>  
+
         </div>
-        <button onClick={() => setModalOpen(true)}>Toast</button>
-        {/* <Modal isOpen={isModalOpen}></Modal> */}
       </div>
       </>
  

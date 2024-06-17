@@ -3,8 +3,21 @@ import { createTRPCRouter, protectedProcedure, publicProcedure } from '../trpc';
 import bcrypt from 'bcrypt';
 import { z } from 'zod';
 import crypto from 'crypto';
+import { get } from 'http';
 
 export const userRouter = createTRPCRouter({
+    getUserById: protectedProcedure
+    .input(z.object({
+        id: z.string().min(1),
+        }))
+    .query(async ({ input, ctx }) => {
+        return await ctx.db.user.findUnique({
+            where: {
+                id: input.id,
+            },
+        });
+    }
+    ),
     register: publicProcedure
     .input(z.object({
         email: z.string().email(),
@@ -72,7 +85,7 @@ export const userRouter = createTRPCRouter({
     .input(z.object({
             userId: z.string().min(1),
             amount: z.number().min(1),
-            depositCode: z.string().min(1),
+            depositCode: z.string(),
         })
     )
     .mutation(async ({ input, ctx }) => {
@@ -84,9 +97,7 @@ export const userRouter = createTRPCRouter({
             },
         });
 
-        if(!depositCode) return;
-
-        const finalAmount = depositCode ? (input.amount + (input.amount * depositCode.percentage / 100)) : input.amount;
+        const finalAmount = depositCode ? (input.amount + (input.amount / depositCode.percentage )) : input.amount;
 
         // update user balance in db
         return await ctx.db.user.update({
@@ -189,6 +200,20 @@ export const userRouter = createTRPCRouter({
         });
     }
     ),
+    getDepositCode: protectedProcedure
+    .input(z.object({
+        userId: z.string().min(1),
+        }))
+    .query(async ({ input, ctx }) => {
+        const response = await ctx.db.depositCode.findMany({
+            where: {
+                userId: input.userId,
+            },
+        });
+
+        return response[0]?.code;
+    }
+    ),
     // when new user use Invite give Deposit code to the creator of the invite
     useInviteCode: publicProcedure
     .input(z.object({
@@ -215,10 +240,22 @@ export const userRouter = createTRPCRouter({
                 code: crypto.randomBytes(4).toString('hex').toUpperCase(),
                 expiresAt: new Date(Date.now() + 1000 * 60 * 60 * expireIn),
             },
+        });    
+    }
+    ),
+    getInviteCode: protectedProcedure
+    .input(z.object({
+        userId: z.string().min(1),
+        }))
+    .query(async ({ input, ctx }) => {
+        return await ctx.db.user.findUnique({
+            where: {
+                id: input.userId,
+            },
+            select: {
+                inviteCode: true,
+            },
         });
-   
-
-        
     }
     ),
 });

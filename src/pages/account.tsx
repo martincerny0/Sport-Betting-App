@@ -21,6 +21,7 @@ import UserBets from "~/common/modules/components/Main/UserBets/UserBets";
 import UserDetails from "~/common/modules/components/Main/UserDetails/UserDetails";
 import HottestBet from "~/common/modules/components/Main/HottestBet/HottestBet";
 import Modal from "~/common/modules/components/Modal/Modal";
+import SupportWindow from "~/common/modules/components/SupportWindow/SupportWindow";
 
 export default function Account() {
 
@@ -59,11 +60,15 @@ export default function Account() {
           <div className={` ${userId ? "h-full" : "hidden"} justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl`}>
             <UserDetails userId={userId ?? ""}></UserDetails>
           </div>
+
           {/* <div className={` ${userId ? "row-span-2" : "row-span-3"}  h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl`}>
           <UserBets userId={userId ?? ""}></UserBets>
           </div> */}
-          <div className="row-span-4 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
-           <InviteBanner></InviteBanner>
+          <div className="row-span-3 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
+           <InviteBanner userId={userId?? ""}></InviteBanner>
+          </div>
+          <div className={` ${userId ? "h-full" : "hidden"} row-span-2 justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl`}>
+            <SupportWindow userId={userId ?? ""}></SupportWindow>
           </div>
         </div>
         {/* <Modal isOpen={isModalOpen}></Modal> */}
