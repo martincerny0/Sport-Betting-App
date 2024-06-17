@@ -1,7 +1,6 @@
 import { api } from '~/utils/api';
 import LoadingContainer from "~/common/modules/components/LoadingContainer/LoadingContainer";
 import React from 'react';
-import Game from '../../Games/Game';
 
 interface IHottestBetProps {
     userId: string;
