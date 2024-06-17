@@ -17,7 +17,7 @@ const MainWindow : React.FC<IMainWindowProps> = ({userId, sport, setBet, setGame
   const { data: sportData } = api.sport.getSportByName.useQuery({name: sport});
 
   const [index, setIndex] = React.useState(0);
-  
+
   if(isLoading) return <div className="flex h-full items-center justify-center flex-row bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl"><div className=""><LoadingContainer isPending={true}></LoadingContainer></div></div>;
   if(isError) return <div className="flex h-full w-full items-center justify-center flex-row bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl"><p>There was an Error loading Data. Try Again Later</p></div>;
   if(!data) return <div className="flex h-full w-full items-center justify-center flex-row bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl"><p>There was an Error loading Data. Try Again Later</p></div>;
@@ -41,7 +41,7 @@ const MainWindow : React.FC<IMainWindowProps> = ({userId, sport, setBet, setGame
     return (
           <div className="relative h-full items-start justify-between flex-row bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
             <div className="w-full h-full">
-              <img alt="hriste" className="w-full h-full rounded-xl opacity-50" src={sportData?.image as string}></img>
+              <img alt="hriste" className="w-full h-full rounded-xl opacity-50" src={sportData?.image}></img>
               <div className="absolute h-5/6 w-5/6 left-14 top-0 font-bold text-3xl justify-center items-center flex ">
               <p><span className="ml-14">{currentGame?.team1Name} vs {currentGame?.team2Name}</span></p>
               </div>

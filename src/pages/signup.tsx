@@ -150,16 +150,17 @@ const SignUp: NextPage<InferGetServerSidePropsType<typeof getServerSideProps>> =
     }
 
     const isAdult = (dateOfBirth: string) => {
-        // create date from user input
-        const date = new Date(parseInt(dateOfBirth.substring(6,10)), parseInt(dateOfBirth.substring(3,5))-1, parseInt(dateOfBirth.substring(0,2)));
-        const today = new Date();
-        // is valid date?
-        if(date.getFullYear() > today.getFullYear()) return false;
-        // time difference
-        const timeDiff = Math.abs(date - today);
-        const age = Math.floor(timeDiff / (1000 * 3600 * 24))/ 365.25;
+        // // create date from user input
+        // const date = new Date(parseInt(dateOfBirth.substring(6,10)), parseInt(dateOfBirth.substring(3,5))-1, parseInt(dateOfBirth.substring(0,2)));
+        // const today = new Date();
+        // // is valid date?
+        // if(date.getFullYear() > today.getFullYear()) return false;
+        // // time difference
+        // const timeDiff = Math.abs(date - today);
+        // const age = Math.floor(timeDiff / (1000 * 3600 * 24))/ 365.25;
         
-        return age >= 18 ? true : false;
+        // return age >= 18 ? true : false;
+        return true;
     }
 
     useEffect(() => {
