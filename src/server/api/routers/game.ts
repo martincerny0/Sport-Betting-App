@@ -31,7 +31,7 @@ export const GameRouter = createTRPCRouter({
     }),
     getGameById: publicProcedure
     .input(z.object({
-        gameId: z.string().min(1),
+        gameId: z.string(),
     }))
     
     .query(({ ctx, input }) => {

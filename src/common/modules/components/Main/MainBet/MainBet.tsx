@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import SmallLoading from "~/common/modules/components/SmallLoading/SmallLoading";
 import { set } from 'zod';
 import Link from 'next/link';
+import LoadingContainer from '~/common/modules/components/LoadingContainer/LoadingContainer';
 
 interface IMainBetProps {
   isSetup: boolean;
@@ -57,6 +58,10 @@ const MainBet: React.FC<IMainBetProps> = ({isSetup, setBetSetup, gameId, userId}
       }
   }
 
+  
+  if(isLoading) return <div className="flex h-full items-center justify-center flex-row bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl"><div className="-ml-28"><LoadingContainer isPending={true}></LoadingContainer></div></div>;
+  if(isError) return <div className="flex h-full w-full items-center justify-center flex-row bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl text-sm"><p className='p-3'>There was an Error loading Data. Try Again Later</p></div>;
+ 
   if(!userId) return (
     <div className="flex h-full items-center justify-between flex-row px-12 bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl">
     <div className="flex flex-col items-center justify-center h-full">

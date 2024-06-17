@@ -17,7 +17,7 @@ const MainWindow : React.FC<IMainWindowProps> = ({userId, sport, setBet, setGame
   const { data: sportData } = api.sport.getSportByName.useQuery({name: sport});
 
   const [index, setIndex] = React.useState(0);
-
+  
   if(isLoading) return <div className="flex h-full items-center justify-center flex-row bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl"><div className=""><LoadingContainer isPending={true}></LoadingContainer></div></div>;
   if(isError) return <div className="flex h-full w-full items-center justify-center flex-row bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl"><p>There was an Error loading Data. Try Again Later</p></div>;
   if(!data) return <div className="flex h-full w-full items-center justify-center flex-row bg-gradient-to-b from-[#3A425A] to-[#0D263D] rounded-xl"><p>There was an Error loading Data. Try Again Later</p></div>;
