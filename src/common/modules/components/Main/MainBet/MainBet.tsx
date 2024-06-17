@@ -9,7 +9,7 @@ interface IMainBetProps {
   isSetup: boolean;
   gameId: string;
   userId: string;
-  setBetSetup(): void;
+  setBetSetup(state: boolean): void;
 }
 
 const MainBet: React.FC<IMainBetProps> = ({isSetup, setBetSetup, gameId, userId}) => {

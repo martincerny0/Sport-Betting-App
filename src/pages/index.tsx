@@ -76,7 +76,7 @@ export default function Home() {
           <SportsList changeSport={changeChosenSport}></SportsList>
           </div>
           <div className="row-span-2 h-full col-span-4  justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl">
-            <MainBet isSetup={isBetSetup} setBet={changeBetSetup} gameId={gameId?? ""} userId={userId?? ""}></MainBet>
+            <MainBet isSetup={isBetSetup} setBetSetup={changeBetSetup} gameId={gameId?? ""} userId={userId?? ""}></MainBet>
           </div>
           <div className={` ${userBetsMore && "hidden"} row-span-4 h-full justify-center items-center flex-col text-white p-[1px] bg-gradient-to-b from-[#EEBC8A] to-[#666666] rounded-xl`}>
            <InviteBanner userId={userId?? ""}  ></InviteBanner>
